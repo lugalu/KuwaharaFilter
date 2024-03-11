@@ -1,12 +1,12 @@
 import UIKit
 import Accelerate
 
-enum KuwaharaTypes{
+public enum KuwaharaTypes{
     case basicKuwahara
     case colored
 }
 
-extension UIImage {
+public extension UIImage {
     
     func applyKuwahara(type: KuwaharaTypes, size: Int) throws -> UIImage?{
         guard var cgImage = self.cgImage else { return nil }
@@ -45,8 +45,10 @@ package func baseKuwahara(_ imageData: inout UnsafeMutablePointer<UInt8>, size: 
     #if DEBUG
         let start = CFAbsoluteTimeGetCurrent()
     #endif
-    DispatchQueue.concurrentPerform(iterations: height) { y in
-        DispatchQueue.concurrentPerform(iterations: width) { x in
+    let size = size
+    //TODO: Remove the Coercion this is just to simplify the reduction of space during debug!
+    DispatchQueue.concurrentPerform(iterations: Int(Double(height) )) { y in
+        DispatchQueue.concurrentPerform(iterations: Int(Double(width) )) { x in
                     autoreleasepool {
                         let meanResult = CalculateKuwahara(x: x, y: y, size: size, width: width, height: height, imageData: imageData, bytesPerPixel: bytesPerPixel)
                         let index = indexCalculator(x: x, y: y, width: width, bytesPerPixel: bytesPerPixel)
@@ -57,42 +59,31 @@ package func baseKuwahara(_ imageData: inout UnsafeMutablePointer<UInt8>, size: 
         
     
     #if DEBUG
-        print("Convert Color Space to Gray total time: \(CFAbsoluteTimeGetCurrent() - start)")
+        print("Kuwaraha: \(CFAbsoluteTimeGetCurrent() - start)")
     #endif
 }
 
-package func CalculateKuwahara(x: Int, y: Int, size: Int, width: Int, height: Int, imageData: UnsafeMutablePointer<UInt8>, bytesPerPixel: Int) -> Int{
-    let xPlus = clamp(min: 0, value: x+size, max: width)
-    let xMinus = clamp(min: 0, value: x-size, max: width)
+package func CalculateKuwahara(x: Int, y: Int, size: Int, width: Int, height: Int, imageData: UnsafeMutablePointer<UInt8>, bytesPerPixel: Int) -> Int {
+    let xPlus = clamp(min: 0, value: x + size, max: width)
+    let xMinus = clamp(min: 0, value: x - size, max: width)
     
-    let yPlus = clamp(min: 0, value: y+size, max: height)
-    let yMinus = clamp(min: 0, value: y-size, max: height)
+    let yPlus = clamp(min: 0, value: y + size, max: height)
+    let yMinus = clamp(min: 0, value: y - size, max: height)
     
-    let quadrantA = getArrSlice(start: indexCalculator(x: x, y: y, width: width, bytesPerPixel: bytesPerPixel),
-                                end: indexCalculator(x: xPlus, y: yPlus, width: width, bytesPerPixel: bytesPerPixel) + 1,
-                                arr: imageData)
-    let deviationA = standardDeviation(arr:  quadrantA)
+    let quadrantA = getArrSlice(x1: x, x2: xPlus, y1: y, y2: yPlus, width: width, bytesPerPixel: bytesPerPixel, arr: imageData)
+    let deviationA = standardDeviation(arr: quadrantA)
 
-    
-    let quadrantB = getArrSlice(start: indexCalculator(x: xMinus, y: y, width: width, bytesPerPixel: bytesPerPixel),
-                                end: indexCalculator(x: x, y: yPlus, width: width, bytesPerPixel: bytesPerPixel) + 1,
-                                arr: imageData)
-    let deviationB = standardDeviation(arr: quadrantB)
+    let quadrantB = getArrSlice(x1: xMinus, x2: x, y1: y, y2: yPlus, width: width, bytesPerPixel: bytesPerPixel, arr: imageData)
+    let deviationB = standardDeviation(arr: quadrantB )
 
-    let quadrantC = getArrSlice(start: indexCalculator(x: xMinus, y: yMinus, width: width, bytesPerPixel: bytesPerPixel),
-                                end: indexCalculator(x: x, y: y, width: width, bytesPerPixel: bytesPerPixel) + 1,
-                                arr: imageData)
+    let quadrantC = getArrSlice(x1: xMinus, x2: x, y1: yMinus, y2: y, width: width, bytesPerPixel: bytesPerPixel, arr: imageData)
     let deviationC = standardDeviation(arr: quadrantC )
     
-    let quadrantD = getArrSlice(start: indexCalculator(x: x, y: yMinus, width: width, bytesPerPixel: bytesPerPixel),
-                                end: indexCalculator(x: xPlus, y: y, width: width, bytesPerPixel: bytesPerPixel) + 1,
-                                arr: imageData)
-    let deviationD = standardDeviation(arr: quadrantD)
+    let quadrantD = getArrSlice(x1: x, x2: xPlus, y1: yMinus, y2: y, width: width, bytesPerPixel: bytesPerPixel, arr: imageData)
+    let deviationD = standardDeviation(arr: quadrantD )
     
-    var minDeviation = min(deviationA, deviationB)
-    minDeviation = min(minDeviation, deviationC)
-    minDeviation = min(minDeviation, deviationD)
-    
+    var minDeviation = min(deviationA, deviationB, deviationC, deviationD)
+
     var meanResult: Int
     switch minDeviation{
     case deviationA:
@@ -111,7 +102,7 @@ package func CalculateKuwahara(x: Int, y: Int, size: Int, width: Int, height: In
     return meanResult
 }
 
-package func standardDeviation(arr: Array<Int>)  -> Int {
+package func standardDeviation(arr: Array<Int>)  -> Double {
     let expression = NSExpression(forFunction: "stddev:", arguments: [NSExpression(forConstantValue: arr)])
     let standardDeviation = expression.expressionValue(with: nil, context: nil)
     guard let standardDeviation = standardDeviation as? Double else {
@@ -119,18 +110,25 @@ package func standardDeviation(arr: Array<Int>)  -> Int {
         fatalError("Standart Deviation Failed remove this later")
         //throw ImageErrors.failedToConvertimage(localizedDescription: "StandartDeviation failed")
     }
-    
-    return Int(standardDeviation)
+    return standardDeviation
 }
 package func mean(arr: Array<Int>) -> Int {
     return arr.reduce(0, +) / arr.count
 }
 
-package func getArrSlice(start: Int, end: Int, arr: UnsafeMutablePointer<UInt8>) -> Array<Int> {
-    var newArr : [Int] = Array<Int>(repeating: 0, count: end - start + 1)
-    for i in start...end {
-        newArr[i - start] = Int(arr[i])
+package func getArrSlice(x1: Int, x2: Int, y1: Int, y2: Int, width:Int, bytesPerPixel: Int,arr: UnsafeMutablePointer<UInt8>) -> Array<Int> {
+    var newArr : [UInt8] = []
+    
+    for i in y1...y2 {
+        for j in x1...x2 {
+            let idx = indexCalculator(x: j, y: i, width: width, bytesPerPixel: bytesPerPixel)
+            newArr.append(arr[idx])
+        }
     }
-    return newArr
+    
+    return newArr.map { Int($0) }
 }
+
+
+
 
