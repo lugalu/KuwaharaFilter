@@ -119,9 +119,9 @@ public func convertColorSpaceToGrayScale(_ cgImage: CGImage) throws -> CGImage{
         let sourceImageFormat = vImage_CGImageFormat(cgImage: cgImage),
         let grayDestinationBuffer = vImage_CGImageFormat(
             bitsPerComponent: 8,
-            bitsPerPixel: 8 * 2,
+            bitsPerPixel: 8,
             colorSpace: CGColorSpaceCreateDeviceGray(),
-            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue)) else {
+            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue)) else {
         throw ImageErrors.failedToConvertimage(localizedDescription: "Unable to initialize")
     }
 
