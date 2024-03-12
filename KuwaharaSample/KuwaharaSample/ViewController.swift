@@ -48,7 +48,7 @@ class ViewController: UIViewController {
             DispatchQueue.global().async {
                 do{
                     
-                    let img = try image?.applyKuwahara(type: .basicKuwahara, size: Int(sliderValue))
+                    let img = try image?.applyKuwahara(type: .colored, size: Int(sliderValue))
                     
                     DispatchQueue.main.async {
                         self.imgView.image = img
@@ -62,7 +62,6 @@ class ViewController: UIViewController {
         }
         let button = UIButton(configuration: .bordered(),primaryAction: action)
         
-
         button.translatesAutoresizingMaskIntoConstraints = false
         
         return button

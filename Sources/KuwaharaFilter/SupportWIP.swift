@@ -167,3 +167,25 @@ package func getGrayArrSlice(x1: Int, x2: Int, y1: Int, y2: Int, width:Int, byte
     return newArr.map { Int($0) }
 }
 
+package func getColoredArrSlice(x1: Int, x2: Int, y1: Int, y2:Int, width: Int, bytesPerPixel: Int, arr: UnsafeMutablePointer<UInt8>) -> (luminance:Array<Int>, pixels: Array<RGBInt>) {
+    
+    var luminanceArr: [Int] = []
+    var pixelArr: [RGBInt] = []
+    
+    for i in y1...y2{
+        for j in x1...x2{
+            let idx = indexCalculator(x: j, y: i, width: width, bytesPerPixel: bytesPerPixel)
+            
+            let r = arr[idx]
+            let g = arr[idx + 1]
+            let b = arr[idx + 2]
+            
+            let luminance = getPixelBrightness(color: (r,g,b))
+            luminanceArr.append(luminance)
+            let rgb = (Int(r),Int(g),Int(b))
+            pixelArr.append(rgb)
+        }
+    }
+    
+    return (luminanceArr, pixelArr)
+}
