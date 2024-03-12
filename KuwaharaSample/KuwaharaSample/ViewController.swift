@@ -43,11 +43,16 @@ class ViewController: UIViewController {
     
     lazy var confirmButton: UIButton = {
         let action = UIAction(title: "Confirm"){ _ in
-            Task {
+            let sliderValue = self.windowSizeSlider.value
+            let image = self.currentImage
+            DispatchQueue.global().async {
                 do{
-                    let img = try self.currentImage?.applyKuwahara(type: .basicKuwahara, size: Int(self.windowSizeSlider.value))
                     
-                    self.imgView.image = img
+                    let img = try image?.applyKuwahara(type: .basicKuwahara, size: Int(sliderValue))
+                    
+                    DispatchQueue.main.async {
+                        self.imgView.image = img
+                    }
                 } catch {
                     print(error.localizedDescription)
                     fatalError("OPS")
