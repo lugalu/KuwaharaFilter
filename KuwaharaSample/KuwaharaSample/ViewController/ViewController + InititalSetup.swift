@@ -16,7 +16,6 @@ extension ViewController{
     
     func addConstraints(){
         addImageViewConstraints()
-        addLabelConstraints()
         addSliderConstraints()
         addPickerConstraints()
         addButtonConstraints()
@@ -38,20 +37,20 @@ extension ViewController{
         NSLayoutConstraint.activate(constraints)
     }
     
-    
-    private func addLabelConstraints() {
-        let constraints = [
-            sliderLabel.topAnchor.constraint(equalTo: imgView.bottomAnchor, constant: 16),
-            sliderLabel.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
-            sliderLabel.trailingAnchor.constraint(equalTo: imgView.trailingAnchor),
-        ]
-        
-        NSLayoutConstraint.activate(constraints)
-    }
+//    
+//    private func addLabelConstraints() {
+//        let constraints = [
+//            sliderLabel.topAnchor.constraint(equalTo: imgView.bottomAnchor, constant: 16),
+//            sliderLabel.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
+//            sliderLabel.trailingAnchor.constraint(equalTo: imgView.trailingAnchor),
+//        ]
+//        
+//        NSLayoutConstraint.activate(constraints)
+//    }
     
     private func addSliderConstraints(){
         let constraints = [
-            windowSizeSlider.topAnchor.constraint(equalTo: sliderLabel.bottomAnchor, constant: 8),
+            windowSizeSlider.topAnchor.constraint(equalTo: imgView.bottomAnchor, constant: 24),
             windowSizeSlider.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
             windowSizeSlider.trailingAnchor.constraint(equalTo: imgView.trailingAnchor),
         ]
@@ -111,10 +110,24 @@ extension ViewController{
     
     func createSliderAction() {
         let action =  UIAction(){ _ in
-            self.windowSizeSlider.value = round(self.windowSizeSlider.value)
-            self.sliderLabel.text = "\(Int(self.windowSizeSlider.value))"
+            let value = round(self.windowSizeSlider.value)
+            self.windowSizeSlider.value = value
+            self.sliderLabel.text = "\(Int(value))"
+            self.sliderLabel.textColor = {
+                if value < 6 {
+                    UIColor.label
+                }else if value < 10 {
+                    UIColor.yellow
+                }else{
+                    UIColor.red
+                }
+            }()
+            
+            self.positionLabel(self.windowSizeSlider)
         }
         
         self.windowSizeSlider.addAction(action, for: .valueChanged)
     }
+    
+
 }
