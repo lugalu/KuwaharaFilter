@@ -139,3 +139,31 @@ public func clamp<T: Comparable & Numeric>(min minValue:T, value:T, max maxValue
 internal func indexCalculator(x: Int, y: Int, width: Int, bytesPerPixel: Int) -> Int{
     return (y * width + x) * bytesPerPixel
 }
+
+package func standardDeviation(arr: Array<Int>) throws  -> Double {
+    let expression = NSExpression(forFunction: "stddev:", arguments: [NSExpression(forConstantValue: arr)])
+    let standardDeviation = expression.expressionValue(with: nil, context: nil)
+    
+    guard let standardDeviation = standardDeviation as? Double else {
+        throw ImageErrors.failedToConvertimage(localizedDescription: "StandartDeviation failed")
+    }
+    
+    return standardDeviation
+}
+package func mean(arr: Array<Int>) -> Int {
+    return arr.reduce(0, +) / arr.count
+}
+
+package func getGrayArrSlice(x1: Int, x2: Int, y1: Int, y2: Int, width:Int, bytesPerPixel: Int,arr: UnsafeMutablePointer<UInt8>) -> Array<Int> {
+    var newArr : [UInt8] = []
+    
+    for i in y1...y2 {
+        for j in x1...x2 {
+            let idx = indexCalculator(x: j, y: i, width: width, bytesPerPixel: bytesPerPixel)
+            newArr.append(arr[idx])
+        }
+    }
+    
+    return newArr.map { Int($0) }
+}
+
