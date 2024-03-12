@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		094F16D22BA0DAFA00CAD88B /* ViewController + InititalSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */; };
+		09F070152BA10E7F005C7D10 /* ViewController+UIPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F070142BA10E7F005C7D10 /* ViewController+UIPicker.swift */; };
 		09F6BF972B9E5D7700985B2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6BF962B9E5D7700985B2C /* AppDelegate.swift */; };
 		09F6BF992B9E5D7700985B2C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6BF982B9E5D7700985B2C /* SceneDelegate.swift */; };
 		09F6BF9B2B9E5D7700985B2C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6BF9A2B9E5D7700985B2C /* ViewController.swift */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController + InititalSetup.swift"; sourceTree = "<group>"; };
+		09F070142BA10E7F005C7D10 /* ViewController+UIPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+UIPicker.swift"; sourceTree = "<group>"; };
 		09F6BF932B9E5D7700985B2C /* KuwaharaSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KuwaharaSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09F6BF962B9E5D7700985B2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		09F6BF982B9E5D7700985B2C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -37,6 +41,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		09F070132BA10E67005C7D10 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				09F6BF9A2B9E5D7700985B2C /* ViewController.swift */,
+				094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */,
+				09F070142BA10E7F005C7D10 /* ViewController+UIPicker.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
 		09F6BF8A2B9E5D7700985B2C = {
 			isa = PBXGroup;
 			children = (
@@ -56,9 +70,9 @@
 		09F6BF952B9E5D7700985B2C /* KuwaharaSample */ = {
 			isa = PBXGroup;
 			children = (
+				09F070132BA10E67005C7D10 /* ViewController */,
 				09F6BF962B9E5D7700985B2C /* AppDelegate.swift */,
 				09F6BF982B9E5D7700985B2C /* SceneDelegate.swift */,
-				09F6BF9A2B9E5D7700985B2C /* ViewController.swift */,
 				09F6BF9F2B9E5D7900985B2C /* Assets.xcassets */,
 				09F6BFA12B9E5D7900985B2C /* LaunchScreen.storyboard */,
 				09F6BFA42B9E5D7900985B2C /* Info.plist */,
@@ -145,6 +159,8 @@
 				09F6BF9B2B9E5D7700985B2C /* ViewController.swift in Sources */,
 				09F6BF972B9E5D7700985B2C /* AppDelegate.swift in Sources */,
 				09F6BF992B9E5D7700985B2C /* SceneDelegate.swift in Sources */,
+				094F16D22BA0DAFA00CAD88B /* ViewController + InititalSetup.swift in Sources */,
+				09F070152BA10E7F005C7D10 /* ViewController+UIPicker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

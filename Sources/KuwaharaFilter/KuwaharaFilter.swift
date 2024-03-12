@@ -1,9 +1,21 @@
 import UIKit
 import Accelerate
 
-public enum KuwaharaTypes{
+public enum KuwaharaTypes: Int, CaseIterable{
     case basicKuwahara
     case colored
+    
+    public func getTitle() -> String{
+        return switch self {
+        case .basicKuwahara:
+            "B&W Kuwahara"
+        case .colored:
+            "Colored Kuwahara"
+        }
+    }
+    
+    
+    
 }
 
 public extension UIImage {
