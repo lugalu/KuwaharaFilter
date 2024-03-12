@@ -12,15 +12,14 @@ public extension UIImage {
         guard size > 1 else { return self }
         guard var cgImage = self.cgImage else { return nil }
         
-        var filter: kuwaharaFilterFunc = basicKuwaharaFilter
+        var filter: kuwaharaFilterFunc = basicKuwaharaRoutine
         switch type {
         case .basicKuwahara:
             cgImage = try convertColorSpaceToGrayScale(cgImage)
-            filter = basicKuwaharaFilter
+            filter = basicKuwaharaRoutine
         case .colored:
             cgImage = try convertToRGB(cgImage)
-        default:
-            cgImage = try convertToRGB(cgImage)
+            filter = coloredKuwaharaRoutine
         }
         
         
@@ -43,7 +42,7 @@ public extension UIImage {
     }
 }
 
-package typealias kuwaharaFilterFunc = (Int,Int,Int,Int,Int,Int,UnsafeMutablePointer<UInt8>) throws -> Int
+package typealias kuwaharaFilterFunc = (Int,Int,Int,Int,Int,Int,inout UnsafeMutablePointer<UInt8>) throws -> Void
 package func baseKuwahara(_ imageData: inout UnsafeMutablePointer<UInt8>, size: Int, width: Int, height: Int, bytesPerPixel: Int, filter: kuwaharaFilterFunc) throws {
     
     #if DEBUG
@@ -61,15 +60,7 @@ package func baseKuwahara(_ imageData: inout UnsafeMutablePointer<UInt8>, size: 
             for x in 0..<width {
                 autoreleasepool {
                     do {
-                        let meanResult = try filter(x, y,
-                                                    size,
-                                                    width, height,
-                                                    bytesPerPixel,
-                                                    imageData)
-                        
-                        let index = indexCalculator(x: x, y: y, width: width, bytesPerPixel: bytesPerPixel)
-                        imageData[index] = UInt8(clamping: meanResult)
-                        
+                      try filter(x, y, size, width, height, bytesPerPixel,&imageData)
                     } catch {
                         objc_sync_enter(error as Any)
                         imageError = error

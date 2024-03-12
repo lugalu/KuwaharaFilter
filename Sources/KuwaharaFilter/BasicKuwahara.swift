@@ -2,6 +2,12 @@
 
 import Foundation
 
+public func basicKuwaharaRoutine(x: Int, y: Int, size: Int, width: Int, height: Int, bytesPerPixel: Int, imageData: inout UnsafeMutablePointer<UInt8>) throws{
+    let meanResult = try basicKuwaharaFilter(x: x, y: y, size: size, width: width, height: height, bytesPerPixel: bytesPerPixel, imageData: imageData)
+    let index = indexCalculator(x: x, y: y, width: width, bytesPerPixel: bytesPerPixel)
+    imageData[index] = UInt8(clamping: meanResult)
+}
+
 public func basicKuwaharaFilter(x: Int, y: Int, size: Int, width: Int, height: Int, bytesPerPixel: Int, imageData: UnsafeMutablePointer<UInt8>) throws -> Int{
     let xPlus = clamp(min: 0, value: x + size, max: width)
     let xMinus = clamp(min: 0, value: x - size, max: width)
