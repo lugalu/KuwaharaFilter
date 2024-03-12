@@ -20,8 +20,9 @@ class ViewController: UIViewController {
     
     let sliderLabel: UILabel = {
         let label = UILabel()
-        label.text = "1"
+        label.text = "2"
         label.textAlignment = .center
+        label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -30,8 +31,8 @@ class ViewController: UIViewController {
     
     let windowSizeSlider: UISlider = {
         let slider = UISlider()
-        slider.minimumValue = 1
-        slider.maximumValue = 50
+        slider.minimumValue = 2
+        slider.maximumValue = 15
         slider.translatesAutoresizingMaskIntoConstraints = false
         
         return slider
@@ -59,6 +60,10 @@ class ViewController: UIViewController {
         setup()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        positionLabel(self.windowSizeSlider)
+    }
     
     //TODO: Add the picker!
     func setup(){
@@ -69,7 +74,12 @@ class ViewController: UIViewController {
         
         kuwaharaPicker.delegate = self
         kuwaharaPicker.dataSource = self
-        
+    }
+    
+    func positionLabel(_ sender: UISlider){
+        let trackRect = sender.trackRect(forBounds: sender.frame)
+        let thumbRect = sender.thumbRect(forBounds: sender.bounds, trackRect: trackRect, value: sender.value)
+        self.sliderLabel.center = CGPoint(x: thumbRect.midX, y: sender.frame.origin.y - 8)
     }
    
 
