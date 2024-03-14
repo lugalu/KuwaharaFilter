@@ -19,7 +19,9 @@ public enum KuwaharaTypes: Int, CaseIterable{
 }
 
 public extension UIImage {
-    
+    /*
+     WARNING: DO NOT USE, this is for learning purposes only, if you want to use Kuwahara, use the CIFilter variant.
+     */
     func applyKuwahara(type: KuwaharaTypes, size: Int) throws -> UIImage?{
         guard size > 1 else { return self }
         guard var cgImage = self.cgImage else { return nil }
@@ -62,9 +64,10 @@ package func baseKuwahara(_ imageData: inout UnsafeMutablePointer<UInt8>, size: 
     #endif
     let size = size
     var imageError: Error?
+    let iterations = 8
     
-    DispatchQueue.concurrentPerform(iterations: 6) { i in
-        let fixed = height / 6
+    DispatchQueue.concurrentPerform(iterations: iterations) { i in
+        let fixed = height / iterations
         let lowBound = i * fixed
         let highBound = lowBound + fixed
         

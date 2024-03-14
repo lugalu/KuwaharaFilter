@@ -3,9 +3,24 @@
 import UIKit
 import KuwaharaFilter
 
-class ViewController: UIViewController {
+
+
+class ViewController: UIViewController, ImageReciever {
     
-    var currentImage: UIImage? = UIImage(named: "testImage")
+    var currentImage: UIImage? = UIImage(named: "testImage") {
+        didSet{
+            imgView.image = currentImage
+        }
+    }     
+    
+    var newImage: UIImage? {
+        set{
+            currentImage = newValue
+        }
+        get {
+            currentImage
+        }
+    }
     
     let imgView: UIImageView = {
         let image = UIImageView()
@@ -71,9 +86,12 @@ class ViewController: UIViewController {
         addViews()
         addConstraints()
         prepareActions()
+        makeNavigation()
         
         kuwaharaPicker.delegate = self
         kuwaharaPicker.dataSource = self
+        
+        
     }
     
     func positionLabel(_ sender: UISlider){
