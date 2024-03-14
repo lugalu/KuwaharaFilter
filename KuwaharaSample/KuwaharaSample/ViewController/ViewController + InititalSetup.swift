@@ -5,7 +5,6 @@ import KuwaharaFilter
 
 extension ViewController{
 
-    
     func addViews(){
         view.addSubview(imgView)
         view.addSubview(sliderLabel)
@@ -36,17 +35,6 @@ extension ViewController{
         
         NSLayoutConstraint.activate(constraints)
     }
-    
-//    
-//    private func addLabelConstraints() {
-//        let constraints = [
-//            sliderLabel.topAnchor.constraint(equalTo: imgView.bottomAnchor, constant: 16),
-//            sliderLabel.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
-//            sliderLabel.trailingAnchor.constraint(equalTo: imgView.trailingAnchor),
-//        ]
-//        
-//        NSLayoutConstraint.activate(constraints)
-//    }
     
     private func addSliderConstraints(){
         let constraints = [
