@@ -70,6 +70,10 @@ class ViewController: UIViewController, ImageReciever {
         return button
     }()
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setup()

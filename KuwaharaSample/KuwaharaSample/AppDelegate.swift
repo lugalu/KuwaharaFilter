@@ -1,6 +1,7 @@
 //Created by Lugalu on 10/03/24.
 
 import UIKit
+import KuwaharaFilter
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -9,6 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        FilterRegister.registerFilters()
         return true
     }
 

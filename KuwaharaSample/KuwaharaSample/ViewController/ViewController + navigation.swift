@@ -5,11 +5,9 @@ import PhotosUI
 
 extension ViewController: PHPickerViewControllerDelegate{
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        print("pre-guard this has been triggered")
         guard let item = results.first else {
             return
         }
-        print("post guard item is not nil")
         
         if item.itemProvider.canLoadObject(ofClass: UIImage.self) {
             item.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in

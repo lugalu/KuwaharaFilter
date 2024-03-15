@@ -8,17 +8,21 @@ let package = Package(
     platforms: [.iOS(.v13)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
+        
         .library(
             name: "KuwaharaFilter",
             targets: ["KuwaharaFilter"]),
+            
+        
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "KuwaharaFilter"),
+            name: "KuwaharaFilter", resources: [.process("Metal/Kuwahara.ci.metal")]),
         .testTarget(
             name: "KuwaharaFilterTests",
-            dependencies: ["KuwaharaFilter"]),
+            dependencies: ["KuwaharaFilter"]
+        ),
     ]
 )

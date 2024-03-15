@@ -71,6 +71,22 @@ extension ViewController{
     
     func createButtonAction(){
         let buttonAction = UIAction(title: "Confirm"){ _ in
+            
+            //TODO: Wait for complete metal support in Swift packages.
+//            guard let baseImage = self.currentImage,
+//                  let image = CIImage(image: baseImage),
+//                  let filter = CIFilter(name: "Kuwahara", parameters: ["inputImage": image as Any]) else {
+//                print("didn't work")
+//                return
+//            }
+            
+//            let out = filter.outputImage
+//            
+//            DispatchQueue.main.async {
+//                guard let out = out else { fatalError("aaaaaaa") }
+//                self.imgView.image = UIImage(ciImage: out)
+//            }
+
             let sliderValue = self.windowSizeSlider.value
             let image = self.currentImage
             
@@ -119,3 +135,9 @@ extension ViewController{
     
 
 }
+
+
+
+
+
+
