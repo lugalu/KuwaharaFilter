@@ -25,6 +25,7 @@ class ViewController: UIViewController, ImageReciever {
     let imgView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
+        image.backgroundColor = .purple
         image.translatesAutoresizingMaskIntoConstraints = false
         image.layer.borderColor = UIColor.green.cgColor
         image.layer.borderWidth = 2
@@ -35,7 +36,7 @@ class ViewController: UIViewController, ImageReciever {
     
     let sliderLabel: UILabel = {
         let label = UILabel()
-        label.text = "2"
+        label.text = "1"
         label.textAlignment = .center
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -46,8 +47,8 @@ class ViewController: UIViewController, ImageReciever {
     
     let windowSizeSlider: UISlider = {
         let slider = UISlider()
-        slider.minimumValue = 2
-        slider.maximumValue = 15
+        slider.minimumValue = 1
+        slider.maximumValue = 50
         slider.translatesAutoresizingMaskIntoConstraints = false
         
         return slider
