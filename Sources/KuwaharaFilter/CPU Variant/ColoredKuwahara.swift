@@ -20,12 +20,12 @@ package func coloredKuwaharaFilter(x: Int, y: Int, size: Int, width: Int, height
     let yPlus = clamp(min: 0, value: y + size, max: height)
     let yMinus = clamp(min: 0, value: y - size, max: height)
     
-    
+    //
     let (luminanceA,quadrantA) = getColoredArrSlice(x1: x, x2: xPlus, y1: y, y2: yPlus, width: width, bytesPerPixel: bytesPerPixel, arr: imageData)
     let deviationA = try standardDeviation(arr: luminanceA)
     
     let (luminanceB,quadrantB) = getColoredArrSlice(x1: xMinus, x2: x, y1: y, y2: yPlus, width: width, bytesPerPixel: bytesPerPixel, arr: imageData)
-    let deviationB = try standardDeviation(arr: luminanceB )
+    let deviationB = try standardDeviation(arr: luminanceB)
     
     let (luminanceC,quadrantC) = getColoredArrSlice(x1: xMinus, x2: x, y1: yMinus, y2: y, width: width, bytesPerPixel: bytesPerPixel, arr: imageData)
     let deviationC = try standardDeviation(arr: luminanceC )
