@@ -25,7 +25,6 @@ class ViewController: UIViewController, ImageReciever {
     let imgView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
-        image.backgroundColor = .purple
         image.translatesAutoresizingMaskIntoConstraints = false
         image.layer.borderColor = UIColor.green.cgColor
         image.layer.borderWidth = 2
@@ -61,11 +60,22 @@ class ViewController: UIViewController, ImageReciever {
         return picker
     }()
     
+    let ciToggle = CustomToggleComponent()
     
     let confirmButton: UIButton = {
         let button = UIButton(configuration: .borderedTinted())
 
         button.setTitle("Confirm", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    let resetButton: UIButton = {
+        let button = UIButton(configuration: .borderedTinted())
+        button.role = .destructive
+        button.tintColor = .systemRed
+        button.setTitle("Reset Image", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
@@ -93,6 +103,7 @@ class ViewController: UIViewController, ImageReciever {
         prepareActions()
         makeNavigation()
         
+        ciToggle.configure(withTitle: "Use CIFilter?")
         kuwaharaPicker.delegate = self
         kuwaharaPicker.dataSource = self
         
@@ -105,7 +116,29 @@ class ViewController: UIViewController, ImageReciever {
         self.sliderLabel.center = CGPoint(x: thumbRect.midX, y: sender.frame.origin.y - 8)
     }
    
-
+    
+    func getImage(image: CIImage, size: Int, type: KuwaharaTypes) throws -> UIImage {
+        guard var filter = CIFilter(name:"Kuwahara") else {
+            throw ImageErrors.failedToOutputImage(localizedDescription: "Filter Creation Failed")
+        }
+        
+        filter.setValue(image, forKey: "inputImage")
+        filter.setValue(size, forKey: "inputKernelSize")
+        filter.setValue(type, forKey: "inputKernelType")
+        
+        guard let out = filter.outputImage else {
+            throw ImageErrors.failedToOutputImage(localizedDescription: "Filter output is missing")
+        }
+        guard let cg = CIContext().createCGImage(out, from: out.extent) else {
+            throw ImageErrors.failedToOutputImage(localizedDescription: "CIContext failed to create CGImage")
+        }
+        
+        return UIImage(cgImage: cg)
+    }
+    
+    func getImage(image: UIImage, size: Int, type: KuwaharaTypes) throws -> UIImage? {
+        return try image.applyKuwahara(type: type, size: size)
+    }
 
 }
 
