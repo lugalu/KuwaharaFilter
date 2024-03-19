@@ -10,19 +10,24 @@ extension ViewController{
         view.addSubview(sliderLabel)
         view.addSubview(windowSizeSlider)
         view.addSubview(kuwaharaPicker)
+        view.addSubview(ciToggle)
         view.addSubview(confirmButton)
+        view.addSubview(resetButton)
     }
     
     func addConstraints(){
         addImageViewConstraints()
         addSliderConstraints()
         addPickerConstraints()
-        addButtonConstraints()
+        addToggleConstraints()
+        addResetButtonConstraints()
+        addConfirmButtonConstraints()
     }
     
     func prepareActions() {
-        createButtonAction()
+        createConfirmButtonAction()
         createSliderAction()
+        createResetButtonAction()
     }
     
     private func addImageViewConstraints(){
@@ -57,10 +62,31 @@ extension ViewController{
         NSLayoutConstraint.activate(constraints)
     }
     
-    
-    private func addButtonConstraints(){
+    private func addToggleConstraints(){
         let constraints = [
-            confirmButton.topAnchor.constraint(equalTo: kuwaharaPicker.bottomAnchor, constant: 16),
+            ciToggle.topAnchor.constraint(equalTo: kuwaharaPicker.bottomAnchor, constant: 16),
+            ciToggle.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
+            ciToggle.trailingAnchor.constraint(equalTo: imgView.trailingAnchor)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+
+    
+    private func addResetButtonConstraints(){
+        let constraints = [
+            resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            resetButton.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
+            resetButton.trailingAnchor.constraint(equalTo: imgView.trailingAnchor),
+            resetButton.heightAnchor.constraint(equalToConstant: 50)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+    
+    private func addConfirmButtonConstraints(){
+        let constraints = [
+            confirmButton.bottomAnchor.constraint(equalTo: resetButton.topAnchor, constant: -16),
             confirmButton.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
             confirmButton.trailingAnchor.constraint(equalTo: imgView.trailingAnchor),
             confirmButton.heightAnchor.constraint(equalToConstant: 50)
@@ -69,47 +95,40 @@ extension ViewController{
         NSLayoutConstraint.activate(constraints)
     }
     
-    func createButtonAction(){
+    func createConfirmButtonAction(){
         let buttonAction = UIAction(title: "Confirm"){ _ in
-            
-            //TODO: Wait for complete metal support in Swift packages.
-            guard let baseImage = self.currentImage,
-                  let image = baseImage.ciImage ?? CIImage(image: baseImage),
-                  let filter = CIFilter(name: "Kuwahara", parameters: ["inputImage": image as Any, "inputKernelSize": Int(self.windowSizeSlider.value)]) else {
-                print("didn't work")
+            guard let baseImage = self.currentImage else {
                 return
             }
             
-           
-            let out = filter.outputImage
+            let kernelSize = Int(self.windowSizeSlider.value)
+            let selectionIdx = self.kuwaharaPicker.selectedRow(inComponent: 0)
+            let kuwaharaType = KuwaharaTypes(rawValue: selectionIdx)!
+            let isCI = self.ciToggle.retrieveValue()
             
-            DispatchQueue.main.async {
-                guard let out = out else {
-                    return
+            var out: UIImage?
+            do{
+                if isCI{
+                    guard let img = baseImage.ciImage ?? CIImage(image: baseImage) else {
+                        return
+                    }
+                    
+                    out = try self.getImage(image: img, size: kernelSize, type: kuwaharaType)
+                    DispatchQueue.main.async {
+                        self.imgView.image = out
+                    }
+                }else{
+                    DispatchQueue.global().async{
+                        out = try? self.getImage(image: baseImage, size: kernelSize, type: kuwaharaType)
+                        
+                        DispatchQueue.main.async {
+                            self.imgView.image = out
+                        }
+                    }
                 }
-                
-                self.imgView.image = UIImage(ciImage: out)
+            }catch{
+                fatalError(error.localizedDescription)
             }
-
-//            let sliderValue = self.windowSizeSlider.value
-//            let image = self.currentImage
-//            
-//            let selectionIdx = self.kuwaharaPicker.selectedRow(inComponent: 0)
-//            let kuwaharaType = KuwaharaTypes(rawValue: selectionIdx) ?? .basicKuwahara
-//            DispatchQueue.global().async {
-//                do{
-//                    
-//                    let img = try image?.applyKuwahara(type: kuwaharaType, size: Int(sliderValue))
-//                    
-//                    DispatchQueue.main.async {
-//                        self.imgView.image = img
-//                    }
-//                } catch {
-//                    print(error.localizedDescription)
-//                    fatalError("OPS")
-//
-//                }
-//            }
         }
         
         confirmButton.addAction(buttonAction, for: .primaryActionTriggered)
@@ -135,6 +154,14 @@ extension ViewController{
         }
         
         self.windowSizeSlider.addAction(action, for: .valueChanged)
+    }
+    
+    func createResetButtonAction(){
+        let buttonAction = UIAction(title: "Reset"){ _ in
+            self.imgView.image = self.currentImage
+        }
+        
+        resetButton.addAction(buttonAction, for: .primaryActionTriggered)
     }
     
 

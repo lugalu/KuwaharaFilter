@@ -28,25 +28,33 @@ extension ViewController: PHPickerViewControllerDelegate{
     func makeNavigation(){
         let galleryAction = UIAction(){ _ in
             let gallery = GalleryComponent.shared
-            if gallery.requestStatus() {
-                let view = gallery.getView(self)
-                view.delegate = self
-                self.present(view, animated: true)
+            guard let view = gallery.getView(self) else { 
+                return
             }
+
+            self.present(view, animated: true)
         }
+        
         let galleryBtn = UIBarButtonItem(image: UIImage(systemName: "photo"), primaryAction: galleryAction)
+        
+        let saveAction = UIAction(){ _ in
+            let gallery = GalleryComponent.shared
+            
+            guard let img = self.imgView.image else { 
+                return
+            }
+            
+            gallery.saveImageToGallery(img: img)
+            
+        }
+        
+        let saveBtn = UIBarButtonItem(systemItem: .save, primaryAction: saveAction)
         
         //let photosBtn = UIBarButtonItem(systemItem: .camera)
         
-        self.navigationItem.rightBarButtonItem = galleryBtn
+        self.navigationItem.rightBarButtonItems = [galleryBtn, saveBtn]
         
-    }
-    
-    
-    func handleGallery(){
-        
-    }
-    
-    
+    }	
+   
     
 }

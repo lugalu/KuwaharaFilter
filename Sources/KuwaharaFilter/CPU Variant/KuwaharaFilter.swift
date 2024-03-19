@@ -13,9 +13,6 @@ public enum KuwaharaTypes: Int, CaseIterable{
             "Colored Kuwahara"
         }
     }
-    
-    
-    
 }
 
 public extension UIImage {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		092C446B2BAA0CF6003D8DFC /* CustomToggleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */; };
 		094F16D22BA0DAFA00CAD88B /* ViewController + InititalSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */; };
 		09E884682BA369EA006F216F /* ViewController + navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E884672BA369EA006F216F /* ViewController + navigation.swift */; };
 		09E8846B2BA36F78006F216F /* GalleryComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8846A2BA36F78006F216F /* GalleryComponent.swift */; };
@@ -21,35 +22,8 @@
 		09F6BFAC2B9E622400985B2C /* KuwaharaFilter in Frameworks */ = {isa = PBXBuildFile; productRef = 09F6BFAB2B9E622400985B2C /* KuwaharaFilter */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildRule section */
-		097D42C02BA4B7300083728B /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			filePatterns = "*.ci.air";
-			fileType = pattern.proxy;
-			inputFiles = (
-			);
-			isEditable = 1;
-			outputFiles = (
-				"$(METAL_LIBRARY_OUTPUT_DIR)/$(INPUT_FILE_BASE).metallib",
-			);
-			script = "# Type a script or drag a script file from your workspace to insert its path.\nxcrun metallib -cikernel \"${INPUT_FILE_PATH}\" -o \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-		};
-		097D42C12BA4B7D40083728B /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			filePatterns = "*ci.metal";
-			fileType = pattern.proxy;
-			inputFiles = (
-			);
-			isEditable = 1;
-			outputFiles = (
-			);
-			script = "# Type a script or drag a script file from your workspace to insert its path.\nxcrun metal -o $MTL_HEADER_SEARCH_PATHS -fcikernel \"${INPUT_FILE_PATH}\" -o \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-		};
-/* End PBXBuildRule section */
-
 /* Begin PBXFileReference section */
+		092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggleComponent.swift; sourceTree = "<group>"; };
 		094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController + InititalSetup.swift"; sourceTree = "<group>"; };
 		09E884672BA369EA006F216F /* ViewController + navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController + navigation.swift"; sourceTree = "<group>"; };
 		09E8846A2BA36F78006F216F /* GalleryComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryComponent.swift; sourceTree = "<group>"; };
@@ -77,6 +51,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		092C44682BAA0872003D8DFC /* Others */ = {
+			isa = PBXGroup;
+			children = (
+				09F6BF962B9E5D7700985B2C /* AppDelegate.swift */,
+				09F6BF982B9E5D7700985B2C /* SceneDelegate.swift */,
+				09F6BF9F2B9E5D7900985B2C /* Assets.xcassets */,
+				09F6BFA12B9E5D7900985B2C /* LaunchScreen.storyboard */,
+				09F6BFA42B9E5D7900985B2C /* Info.plist */,
+			);
+			path = Others;
+			sourceTree = "<group>";
+		};
+		092C44692BAA08CC003D8DFC /* UIComponents */ = {
+			isa = PBXGroup;
+			children = (
+				092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */,
+			);
+			path = UIComponents;
+			sourceTree = "<group>";
+		};
 		09E884692BA36F5F006F216F /* SystemComponents */ = {
 			isa = PBXGroup;
 			children = (
@@ -117,13 +111,10 @@
 		09F6BF952B9E5D7700985B2C /* KuwaharaSample */ = {
 			isa = PBXGroup;
 			children = (
+				092C44692BAA08CC003D8DFC /* UIComponents */,
+				092C44682BAA0872003D8DFC /* Others */,
 				09E884692BA36F5F006F216F /* SystemComponents */,
 				09F070132BA10E67005C7D10 /* ViewController */,
-				09F6BF962B9E5D7700985B2C /* AppDelegate.swift */,
-				09F6BF982B9E5D7700985B2C /* SceneDelegate.swift */,
-				09F6BF9F2B9E5D7900985B2C /* Assets.xcassets */,
-				09F6BFA12B9E5D7900985B2C /* LaunchScreen.storyboard */,
-				09F6BFA42B9E5D7900985B2C /* Info.plist */,
 			);
 			path = KuwaharaSample;
 			sourceTree = "<group>";
@@ -140,8 +131,6 @@
 				09F6BF912B9E5D7700985B2C /* Resources */,
 			);
 			buildRules = (
-				097D42C12BA4B7D40083728B /* PBXBuildRule */,
-				097D42C02BA4B7300083728B /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -206,6 +195,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				092C446B2BAA0CF6003D8DFC /* CustomToggleComponent.swift in Sources */,
 				09E884712BA37AF6006F216F /* CameraComponent + View.swift in Sources */,
 				09F6BF9B2B9E5D7700985B2C /* ViewController.swift in Sources */,
 				09F6BF972B9E5D7700985B2C /* AppDelegate.swift in Sources */,
@@ -360,7 +350,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G8P85U8XP2;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = KuwaharaSample/Info.plist;
+				INFOPLIST_FILE = KuwaharaSample/Others/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "So you can take photos and customize them without leaving the app.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "So you can customize your already existing photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -391,7 +381,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G8P85U8XP2;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = KuwaharaSample/Info.plist;
+				INFOPLIST_FILE = KuwaharaSample/Others/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "So you can take photos and customize them without leaving the app.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "So you can customize your already existing photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
