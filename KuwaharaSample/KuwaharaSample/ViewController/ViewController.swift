@@ -59,9 +59,7 @@ class ViewController: UIViewController, ImageReciever {
         
         return picker
     }()
-    
-    let ciToggle = CustomToggleComponent()
-    
+        
     let confirmButton: UIButton = {
         let button = UIButton(configuration: .borderedTinted())
 
@@ -103,7 +101,6 @@ class ViewController: UIViewController, ImageReciever {
         prepareActions()
         makeNavigation()
         
-        ciToggle.configure(withTitle: "Use CIFilter?")
         kuwaharaPicker.delegate = self
         kuwaharaPicker.dataSource = self
         
@@ -135,10 +132,5 @@ class ViewController: UIViewController, ImageReciever {
         
         return UIImage(cgImage: cg)
     }
-    
-    func getImage(image: UIImage, size: Int, type: KuwaharaTypes) throws -> UIImage? {
-        return try image.applyKuwahara(type: type, size: size)
-    }
-
 }
 

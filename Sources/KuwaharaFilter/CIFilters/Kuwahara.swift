@@ -1,37 +1,10 @@
 //Created by Lugalu on 14/03/24.
 
-import Foundation
 import CoreImage
 
 fileprivate extension KuwaharaTypes {
     func getKernel() -> String {
         switch self {
-        case .basicKuwahara:
-            return """
-                kernel float4 Kuwahara(sampler s,int kernelSize) {
-                    float2 uv = destCoord();
-                    int radius = kernelSize / 2;
-                    float window = 2.0 * float(radius) + 1;
-                    int quad = int(ceil(window/2));
-                    int ks = quad * quad;
-
-                    float4 q1 = sampleQuadrant(s, uv, 0, radius, 0, radius, ks);
-                    float4 q2 = sampleQuadrant(s, uv, -radius, 0, 0, radius, ks);
-                    float4 q3 = sampleQuadrant(s, uv, -radius, 0, -radius, 0, ks);
-                    float4 q4 = sampleQuadrant(s, uv, 0, radius, -radius, 0, ks);
-
-                    float minValue = min(q1.a, min(q2.a, min(q3.a, q4.a)));
-                
-                    float4 q = float4(0);
-                    q = minValue == q1.a ? q1 : q;
-                    q = minValue == q2.a ? q2 : q;
-                    q = minValue == q3.a ? q3 : q;
-                    q = minValue == q4.a ? q4 : q;
-                
-                    return float4(q.rgb, 1);
-                }
-            """
-            
         case .colored:
             return """
                 kernel float4 Kuwahara(sampler s,int kernelSize) {
@@ -71,7 +44,7 @@ fileprivate extension KuwaharaTypes {
             
             kernel float4 Kuwahara(sampler s, int kernelSize, float zeroCross, float hardness, float q){
                 float2 uv = destCoord();
-                int radius = kernelSize;
+                int radius = kernelSize / 2;
             
                 float zeta = 2.0 / float(radius);
                 float sinZero = sin(zeroCross);
@@ -155,21 +128,22 @@ fileprivate extension KuwaharaTypes {
     }
 }
 
-public class Kuwahara: CIFilter{
+public class Kuwahara: CIFilter {
     //Standard
-    var inputImage: CIImage?
-    var inputKernelSize: Int = 2
-    var inputKernelType: KuwaharaTypes = .colored
+    @objc dynamic var inputImage: CIImage?
+    @objc dynamic var inputKernelSize: Int = 2
+    @objc var inputKernelType: KuwaharaTypes = .colored
+    @objc var inputIsGrayscale: Bool = false
     
     //Generalized
-    /* Defines the level of modification lower the value more blobs of the effect appear.*/
-    var inputZeroCross: Float = 1
+    /** Defines the point where a value turns from positive to negative, and vice-versa.*/
+    @objc dynamic var inputZeroCross: Float = 0.58
 
-    /* Defines quality, the lower closer it is to the original, higher more stylized, but too high can accentuate blacks and create blobs. Is necessary to strike a balance between the Hardness and inputQuality */
-    var inputHardness: Float = 100
+    /** Image Hardness, should be between 1 and 100. */
+    @objc dynamic var inputHardness: Float = 100
     
-    /* Defines quality, the lower closer it is to the original, higher more stylized, but too high can accentuate blacks and create blobs. Is necessary to strike a balance between the Hardness and inputQuality */
-    var inputQuality: Float = 15
+    /** Image Sharpness, should be between 1 and 18*/
+    @objc dynamic var inputSharpness: Float = 15
     
     static private let baseKernelCode: String = """
     #define SECTORS 8
@@ -203,11 +177,8 @@ public class Kuwahara: CIFilter{
 """
     
     var kernel: CIKernel {
-        
         return CIKernel(source: Kuwahara.baseKernelCode + inputKernelType.getKernel()) ?? CIKernel()
     }
-    
-    
     
     public override var attributes: [String : Any] {
          return [
@@ -230,10 +201,16 @@ public class Kuwahara: CIFilter{
                                  kCIAttributeDisplayName: "Kernel type",
                                  kCIAttributeDefault: KuwaharaTypes.colored],
              
+             "inputIsGrayscale": [kCIAttributeIdentity: 0,
+                                 kCIAttributeClass: "Bool",
+                                 kCIAttributeDisplayName: "is Grayscale",
+                                 kCIAttributeDefault: false,
+                                 kCIAttributeDefault: kCIAttributeTypeBoolean],
+             
              "inputZeroCross": [kCIAttributeIdentity: 0,
                                 kCIAttributeClass: "NSNumber",
                                 kCIAttributeDisplayName: "Zero Crossing value",
-                                kCIAttributeDefault: 0,
+                                kCIAttributeDefault: 0.58,
                                 kCIAttributeMin: 0.01,
                                 kCIAttributeMax: 2,
                                 kCIAttributeDefault: kCIAttributeTypeScalar],
@@ -242,14 +219,16 @@ public class Kuwahara: CIFilter{
                                kCIAttributeClass: "NSNumber",
                                kCIAttributeDisplayName: "Hardness value",
                                kCIAttributeDefault: 100,
-                               kCIAttributeMin: 0,
+                               kCIAttributeMin: 1,
+                               kCIAttributeMax: 100,
                                kCIAttributeDefault: kCIAttributeTypeScalar],
              
-             "inputQuality": [kCIAttributeIdentity: 0,
+             "inputSharpness": [kCIAttributeIdentity: 0,
                               kCIAttributeClass: "NSNumber",
-                              kCIAttributeDisplayName: "Quality value",
+                              kCIAttributeDisplayName: "Sharpness value",
                               kCIAttributeDefault: 15,
                               kCIAttributeMin: 0,
+                              kCIAttributeMax: 18,
                               kCIAttributeDefault: kCIAttributeTypeScalar]
          ]
      }
@@ -272,6 +251,12 @@ public class Kuwahara: CIFilter{
             }
             inputKernelType = type
             
+        case "inputIsGrayscale":
+            guard let type = value as? Bool else {
+                return
+            }
+            inputIsGrayscale = type
+            
         case "inputZeroCross":
             guard let type = value as? Float else {
                 return
@@ -288,10 +273,39 @@ public class Kuwahara: CIFilter{
             guard let type = value as? Float else {
                 return
             }
-            inputQuality = type
+            inputSharpness = type
             
             default:
                 break
+        }
+    }
+    
+    public override class func value(forKey key: String) -> Any? {
+        return switch key {
+        case "inputImage":
+            nil
+            
+        case "inputKernelSize":
+            2
+            
+        case "inputIsGrayscale":
+            false
+      
+        case "inputKernelType":
+            KuwaharaTypes.colored
+            
+        case "inputZeroCross":
+            0.58
+          
+            
+        case "inputHardness":
+            100
+            
+        case "inputQuality":
+            18
+            
+        default:
+            nil
         }
     }
     
@@ -304,7 +318,7 @@ public class Kuwahara: CIFilter{
                     return rect
                 }
                 
-                if inputKernelType == .basicKuwahara {
+                if inputIsGrayscale {
                     let filter = CIFilter(name: "CIColorMonochrome")
                     filter?.setValue(input, forKey: "inputImage")
                     filter?.setValue(CIColor(red: 0.7, green: 0.7, blue: 0.7), forKey: "inputColor")
@@ -317,7 +331,7 @@ public class Kuwahara: CIFilter{
                 var args: [Any] = [input, inputKernelSize]
                 
                 if inputKernelType == .generalized{
-                    args.append(contentsOf: [inputZeroCross, inputHardness, inputQuality])
+                    args.append(contentsOf: [inputZeroCross, inputHardness, inputSharpness])
                 }
                 
                 let out = kernel.apply(extent: input.extent,
