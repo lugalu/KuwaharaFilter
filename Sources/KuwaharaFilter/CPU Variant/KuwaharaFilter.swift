@@ -4,6 +4,7 @@ import Accelerate
 public enum KuwaharaTypes: Int, CaseIterable{
     case basicKuwahara
     case colored
+    case generalized
     
     public func getTitle() -> String{
         return switch self {
@@ -11,6 +12,8 @@ public enum KuwaharaTypes: Int, CaseIterable{
             "B&W Kuwahara"
         case .colored:
             "Colored Kuwahara"
+        case .generalized:
+            "Generalized"
         }
     }
 }
@@ -28,7 +31,7 @@ public extension UIImage {
         case .basicKuwahara:
             cgImage = try convertColorSpaceToGrayScale(cgImage)
             filter = basicKuwaharaRoutine
-        case .colored:
+        case .colored, .generalized:
             cgImage = try convertToRGB(cgImage)
             filter = coloredKuwaharaRoutine
         }
