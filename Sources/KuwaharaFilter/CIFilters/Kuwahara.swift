@@ -69,11 +69,13 @@ fileprivate extension KuwaharaTypes {
                 return z * z;
             }
             
-            kernel float4 Kuwahara(sampler s, int kernelSize, float eta, float hardness, float q){
+            kernel float4 Kuwahara(sampler s, int kernelSize, float zeroCross, float hardness, float q){
                 float2 uv = destCoord();
                 int radius = kernelSize;
             
                 float zeta = 2.0 / float(radius);
+                float sinZero = sin(zeroCross);
+                float eta = zeta + cos(zeroCross) / (sinZero * sinZero);
             
                 float4 mean[SECTORS];
                 float3 std[SECTORS];
@@ -161,7 +163,7 @@ public class Kuwahara: CIFilter{
     
     //Generalized
     /* Defines the level of modification lower the value more blobs of the effect appear.*/
-    var inputETA: Float = 0
+    var inputZeroCross: Float = 1
 
     /* Defines quality, the lower closer it is to the original, higher more stylized, but too high can accentuate blacks and create blobs. Is necessary to strike a balance between the Hardness and inputQuality */
     var inputHardness: Float = 100
@@ -217,37 +219,38 @@ public class Kuwahara: CIFilter{
                             kCIAttributeType: kCIAttributeTypeImage],
 
              "inputKernelSize": [kCIAttributeIdentity: 0,
-                                       kCIAttributeClass: "NSNumber",
-                                       kCIAttributeDisplayName: "kernelSize",
-                                       kCIAttributeDefault: 2,
-                                       kCIAttributeMin: 2,
-                                       kCIAttributeType: kCIAttributeTypeScalar],
+                                 kCIAttributeClass: "NSNumber",
+                                 kCIAttributeDisplayName: "kernelSize",
+                                 kCIAttributeDefault: 2,
+                                 kCIAttributeMin: 2,
+                                 kCIAttributeType: kCIAttributeTypeScalar],
              
              "inputKernelType": [kCIAttributeIdentity: 0,
-                                       kCIAttributeClass: "KuwaharaTypes",
-                                       kCIAttributeDisplayName: "Kernel type",
-                                       kCIAttributeDefault: KuwaharaTypes.colored],
+                                 kCIAttributeClass: "KuwaharaTypes",
+                                 kCIAttributeDisplayName: "Kernel type",
+                                 kCIAttributeDefault: KuwaharaTypes.colored],
              
-             "inputETA": [kCIAttributeIdentity: 0,
-                                       kCIAttributeClass: "NSNumber",
-                                       kCIAttributeDisplayName: "Eta value",
-                                       kCIAttributeDefault: 0,
-                                       kCIAttributeMin: 0,
-                                       kCIAttributeDefault: kCIAttributeTypeScalar],
+             "inputZeroCross": [kCIAttributeIdentity: 0,
+                                kCIAttributeClass: "NSNumber",
+                                kCIAttributeDisplayName: "Zero Crossing value",
+                                kCIAttributeDefault: 0,
+                                kCIAttributeMin: 0.01,
+                                kCIAttributeMax: 2,
+                                kCIAttributeDefault: kCIAttributeTypeScalar],
              
              "inputHardness": [kCIAttributeIdentity: 0,
-                                       kCIAttributeClass: "NSNumber",
-                                       kCIAttributeDisplayName: "Hardness value",
-                                       kCIAttributeDefault: 100,
-                                       kCIAttributeMin: 0,
-                                       kCIAttributeDefault: kCIAttributeTypeScalar],
+                               kCIAttributeClass: "NSNumber",
+                               kCIAttributeDisplayName: "Hardness value",
+                               kCIAttributeDefault: 100,
+                               kCIAttributeMin: 0,
+                               kCIAttributeDefault: kCIAttributeTypeScalar],
              
              "inputQuality": [kCIAttributeIdentity: 0,
-                                       kCIAttributeClass: "NSNumber",
-                                       kCIAttributeDisplayName: "Quality value",
-                                       kCIAttributeDefault: 15,
-                                       kCIAttributeMin: 0,
-                                       kCIAttributeDefault: kCIAttributeTypeScalar]
+                              kCIAttributeClass: "NSNumber",
+                              kCIAttributeDisplayName: "Quality value",
+                              kCIAttributeDefault: 15,
+                              kCIAttributeMin: 0,
+                              kCIAttributeDefault: kCIAttributeTypeScalar]
          ]
      }
     
@@ -269,11 +272,11 @@ public class Kuwahara: CIFilter{
             }
             inputKernelType = type
             
-        case "inputETA":
+        case "inputZeroCross":
             guard let type = value as? Float else {
                 return
             }
-            inputETA = type
+            inputZeroCross = type
             
         case "inputHardness":
             guard let type = value as? Float else {
@@ -314,7 +317,7 @@ public class Kuwahara: CIFilter{
                 var args: [Any] = [input, inputKernelSize]
                 
                 if inputKernelType == .generalized{
-                    args.append(contentsOf: [inputETA, inputHardness, inputQuality])
+                    args.append(contentsOf: [inputZeroCross, inputHardness, inputQuality])
                 }
                 
                 let out = kernel.apply(extent: input.extent,
