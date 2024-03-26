@@ -5,7 +5,7 @@ import CoreImage
 fileprivate extension KuwaharaTypes {
     func getKernel() -> String {
         switch self {
-        case .colored:
+        case .basic:
             return """
                 kernel float4 Kuwahara(sampler s,int kernelSize) {
                     float2 uv = destCoord();
@@ -132,11 +132,11 @@ public class Kuwahara: CIFilter {
     //Standard
     @objc dynamic var inputImage: CIImage?
     @objc dynamic var inputKernelSize: Int = 2
-    @objc var inputKernelType: KuwaharaTypes = .colored
+    @objc var inputKernelType: KuwaharaTypes = .basic
     @objc var inputIsGrayscale: Bool = false
     
     //Generalized
-    /** Defines the point where a value turns from positive to negative, and vice-versa.*/
+    /** Defines the cross between 2 sectors of kuwahara..*/
     @objc dynamic var inputZeroCross: Float = 0.58
 
     /** Image Hardness, should be between 1 and 100. */
@@ -176,10 +176,47 @@ public class Kuwahara: CIFilter {
     }
 """
     
-    var kernel: CIKernel {
+    private var kernel: CIKernel {
         return CIKernel(source: Kuwahara.baseKernelCode + inputKernelType.getKernel()) ?? CIKernel()
     }
     
+
+    
+    public override var outputImage : CIImage? {
+            get {
+                guard var input = inputImage else {
+                    return nil
+                }
+                let callback: CIKernelROICallback = {_,rect in
+                    return rect
+                }
+                
+                if inputIsGrayscale {
+                    let filter = CIFilter(name: "CIColorMonochrome")
+                    filter?.setValue(input, forKey: "inputImage")
+                    filter?.setValue(CIColor(red: 0.7, green: 0.7, blue: 0.7), forKey: "inputColor")
+                    filter?.setValue(1.0, forKey: "inputIntensity")
+                    
+                    guard let out = filter?.outputImage else { return nil }
+                    input = out
+                }
+                
+                var args: [Any] = [input, inputKernelSize]
+                
+                if inputKernelType == .generalized{
+                    args.append(contentsOf: [inputZeroCross, inputHardness, inputSharpness])
+                }
+                
+                let out = kernel.apply(extent: input.extent,
+                                                roiCallback: callback,
+                                                 arguments: args)
+                return out
+            }
+        }
+}
+
+//MARK: Key-Value coding compliance methods
+extension Kuwahara {
     public override var attributes: [String : Any] {
          return [
              kCIAttributeFilterDisplayName: "Kuwahara",
@@ -199,7 +236,7 @@ public class Kuwahara: CIFilter {
              "inputKernelType": [kCIAttributeIdentity: 0,
                                  kCIAttributeClass: "KuwaharaTypes",
                                  kCIAttributeDisplayName: "Kernel type",
-                                 kCIAttributeDefault: KuwaharaTypes.colored],
+                                 kCIAttributeDefault: KuwaharaTypes.basic],
              
              "inputIsGrayscale": [kCIAttributeIdentity: 0,
                                  kCIAttributeClass: "Bool",
@@ -292,7 +329,7 @@ public class Kuwahara: CIFilter {
             false
       
         case "inputKernelType":
-            KuwaharaTypes.colored
+            KuwaharaTypes.basic
             
         case "inputZeroCross":
             0.58
@@ -308,36 +345,4 @@ public class Kuwahara: CIFilter {
             nil
         }
     }
-    
-    public override var outputImage : CIImage? {
-            get {
-                guard var input = inputImage else {
-                    return nil
-                }
-                let callback: CIKernelROICallback = {_,rect in
-                    return rect
-                }
-                
-                if inputIsGrayscale {
-                    let filter = CIFilter(name: "CIColorMonochrome")
-                    filter?.setValue(input, forKey: "inputImage")
-                    filter?.setValue(CIColor(red: 0.7, green: 0.7, blue: 0.7), forKey: "inputColor")
-                    filter?.setValue(1.0, forKey: "inputIntensity")
-                    
-                    guard let out = filter?.outputImage else { return nil }
-                    input = out
-                }
-                
-                var args: [Any] = [input, inputKernelSize]
-                
-                if inputKernelType == .generalized{
-                    args.append(contentsOf: [inputZeroCross, inputHardness, inputSharpness])
-                }
-                
-                let out = kernel.apply(extent: input.extent,
-                                                roiCallback: callback,
-                                                 arguments: args)
-                return out
-            }
-        }
 }
