@@ -124,6 +124,65 @@ fileprivate extension KuwaharaTypes {
             }
             
             """
+        case .test:
+            return """
+            float2 mul(float2x2 matrix, float2 vec){
+                float a = matrix[0][0] * vec.x + matrix[0][1] * vec.y;
+                float b = matrix[1][0] * vec.x + matrix[1][1] * vec.y;
+                return float2(a,b);
+            }
+            
+            kernel float4 Kuwahara(sampler s, sampler weights, int kernelSize, float zeroCross, float hardness, float q) {
+                int k = 0;
+                float2 uv = destCoord();
+                int radius = kernelSize / 2;
+            
+                float piN = 2.0f * PI / float(SECTORS);
+                float2x2 X = float2x2(
+                    float2(cos(piN), sin(piN)),
+                    float2(-sin(piN), cos(piN))
+                );
+            
+                float4 mean[SECTORS];
+                float3 std[SECTORS];
+                
+                for (k = 0; k < SECTORS; k++){
+                    mean[k] = vec4(0);
+                    std[k] = vec3(0);
+                }
+            
+                for (int x = -radius; x <= radius; x++) {
+                    for (int y = -radius; y <= radius; y++) {
+                        float2 v = 0.5 * float2(x,y) / float(radius);
+                        float3 c = sample(s, samplerTransform(s, uv + float2(x,y))).rgb;
+                        
+                        for (k = 0; k < SECTORS; k++){
+                            float w = sample(weights, v + 0.5).r;
+                    
+                            mean[k] += float4(c * w, w);
+                            std[k] += c * c * w;
+                            
+                            v = mul(X,v);
+                        }
+                    }
+                }
+            
+                float4 result = float4(0);
+                
+                for(k = 0; k < SECTORS; k++){
+                    mean[k].rgb /= mean[k].a;
+                    std[k] = abs(std[k] / mean[k].a - (mean[k].rgb * mean[k].rgb));
+            
+                    float sigma2 = std[k].r + std[k].g + std[k].b;
+                    float w = 1. / (1. + pow(abs(1000. * sigma2), 0.5 * q));
+                    
+                    result += float4(mean[k].rgb * w, w);
+                }
+            
+                result /= result.a;
+                return result;
+            }
+            """
         }
     }
 }
@@ -136,14 +195,14 @@ public class Kuwahara: CIFilter {
     @objc var inputIsGrayscale: Bool = false
     
     //Generalized
-    /** Defines the cross between 2 sectors of kuwahara..*/
+    /** Defines the overlap between 2 sectors of kuwahara..*/
     @objc dynamic var inputZeroCross: Float = 0.58
 
-    /** Image Hardness, should be between 1 and 100. */
+    /** Image Hardness, should be between 1 <= n <= 100. */
     @objc dynamic var inputHardness: Float = 100
     
-    /** Image Sharpness, should be between 1 and 18*/
-    @objc dynamic var inputSharpness: Float = 15
+    /** Image Sharpness, should be 1 <= n <= 18. */
+    @objc dynamic var inputSharpness: Float = 18
     
     static private let baseKernelCode: String = """
     #define SECTORS 8
@@ -175,12 +234,52 @@ public class Kuwahara: CIFilter {
             return float4(color,std);
     }
 """
-    
+ 
     private var kernel: CIKernel {
         return CIKernel(source: Kuwahara.baseKernelCode + inputKernelType.getKernel()) ?? CIKernel()
     }
     
+    private var preSectorPass: CIKernel{
+        return CIKernel(source: Kuwahara.baseKernelCode + """
+        kernel float4 preSectorPass(sampler s) {
+            float2 uv = samplerTransform(s, destCoord());
+            float2 pos = uv - 0.5f;
+            float phi = atan(pos).y;
+            int Xk = int((-PI / SECTORS) < phi && phi <= (PI / SECTORS));
+            return float4(int(dot(pos, pos) <= 0.25f));
+        }
+        """)!
+    }
+    
+    private var preGaussianPass: CIKernel{
+        return CIKernel(source: Kuwahara.baseKernelCode + """
+            float gaussian(float sigma, float2 pos) {
+                return ( 1.0f / (2.0f * PI * sigma * sigma) ) * exp( -( pow((pos.x - pos.y),2.) / (2.0f * sigma * sigma) ) );
+            }
+        
+            kernel float4 preGaussianPass(sampler s) {
+            float sigmaR = 0.5 * 32.0 * 0.5;
+            float sigmaS = 0.33 * sigmaR;
+            float2 uv = samplerCoord(s);
+            
+            float weight = 0.0f;
+            float kernelSum = 0.0f;
+        
+            for (int x = -int(floor(sigmaS)); x <= int(floor(sigmaS)); x++) {
+                for (int y = -int(floor(sigmaS)); y <= int(floor(sigmaS)); y++) {
+        
+                    float c = sample(s, uv + float2(x,y) * float2(1./32.,1./32.) ).r;
+                    float gauss = gaussian(sigmaS, float2(x, y));
 
+                    weight += c * gauss;
+                    kernelSum += gauss;
+                }
+            }
+            float result = (weight / kernelSum) * gaussian(sigmaR, (uv - 0.5) * sigmaR * 5.);
+            return float4(result);
+        }
+        """)!
+    }
     
     public override var outputImage : CIImage? {
             get {
@@ -203,7 +302,17 @@ public class Kuwahara: CIFilter {
                 
                 var args: [Any] = [input, inputKernelSize]
                 
-                if inputKernelType == .generalized{
+                if inputKernelType == .test{
+                    guard let url = Bundle.module.url(forResource: "blackSquare", withExtension: "jpg"),
+                          let ciBase = CIImage(contentsOf: url) else {
+                        return nil
+                    }
+                    let sectorPrePass = preSectorPass.apply(extent: ciBase.extent, roiCallback: callback, arguments: [ciBase])
+                    let gaussPrePass = preGaussianPass.apply(extent: ciBase.extent, roiCallback: callback, arguments: [sectorPrePass])
+                    args.insert(gaussPrePass, at: 1)
+                }
+                
+                if inputKernelType == .generalized || inputKernelType == .test{
                     args.append(contentsOf: [inputZeroCross, inputHardness, inputSharpness])
                 }
                 
@@ -214,6 +323,16 @@ public class Kuwahara: CIFilter {
             }
         }
 }
+
+
+
+
+
+
+
+
+
+
 
 //MARK: Key-Value coding compliance methods
 extension Kuwahara {

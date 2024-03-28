@@ -12,7 +12,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "KuwaharaFilter"),
+            name: "KuwaharaFilter", resources: [.process("Resources/blackSquare.jpg")]),
         .testTarget(
             name: "KuwaharaFilterTests",
             dependencies: ["KuwaharaFilter"]
