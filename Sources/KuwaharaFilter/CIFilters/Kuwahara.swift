@@ -127,7 +127,7 @@ fileprivate extension KuwaharaTypes {
         case .Generalized:
             return """
             
-            kernel float4 Kuwahara(sampler s, sampler weights, int kernelSize, float zeroCross, float hardness, float q) {
+            kernel float4 Kuwahara(sampler s, sampler weights, int kernelSize, float sharpness) {
                 int k = 0;
                 float2 uv = destCoord();
                 int radius = kernelSize / 2;
@@ -169,7 +169,7 @@ fileprivate extension KuwaharaTypes {
                     std[k] = abs(std[k] / mean[k].a - (mean[k].rgb * mean[k].rgb));
             
                     float sigma2 = std[k].r + std[k].g + std[k].b;
-                    float w = 1. / (1. + pow(abs(1000. * sigma2), 0.5 * q));
+                    float w = 1. / (1. + pow(abs(1000. * sigma2), 0.5 * sharpness));
                     
                     result += float4(mean[k].rgb * w, w);
                 }
@@ -185,18 +185,21 @@ fileprivate extension KuwaharaTypes {
 public class Kuwahara: CIFilter {
     //Standard
     @objc dynamic var inputImage: CIImage?
+        /** Kernel Matrix around each pixel, should be 2<=n, note that higher values take more time to compute.*/
     @objc dynamic var inputKernelSize: Int = 2
+    /** The operation to be used, read the enum cases for a general explanation. */
     @objc var inputKernelType: KuwaharaTypes = .basic
+    /** if image should become grayscale. */
     @objc var inputIsGrayscale: Bool = false
     
     //Generalized
-    /** Defines the overlap between 2 sectors of kuwahara..*/
+    /** Defines the overlap between 2 sectors of kuwahara, should be 0.01 <= n <= 2. affects Polynomial*/
     @objc dynamic var inputZeroCross: Float = 0.58
 
-    /** Image Hardness, should be between 1 <= n <= 100. */
+    /** Image Hardness, should be between 1 <= n <= 100. affects Polynomial */
     @objc dynamic var inputHardness: Float = 100
     
-    /** Image Sharpness, should be 1 <= n <= 18. */
+    /** Image Sharpness, should be 1 <= n <= 18. affects all except for basic.*/
     @objc dynamic var inputSharpness: Float = 18
     
     static private let baseKernelCode: String = """
@@ -297,7 +300,10 @@ public class Kuwahara: CIFilter {
                 
                 var args: [Any] = [input, inputKernelSize]
                 
-                if inputKernelType == .Generalized{
+                switch inputKernelType {
+                case .basic:
+                    break
+                case .Generalized:
                     guard let url = Bundle.module.url(forResource: "blackSquare", withExtension: "jpg"),
                           let ciBase = CIImage(contentsOf: url) else {
                         return nil
@@ -305,9 +311,9 @@ public class Kuwahara: CIFilter {
                     let sectorPrePass = preSectorPass.apply(extent: ciBase.extent, roiCallback: callback, arguments: [ciBase])
                     let gaussPrePass = preGaussianPass.apply(extent: ciBase.extent, roiCallback: callback, arguments: [sectorPrePass])
                     args.insert(gaussPrePass, at: 1)
-                }
-                
-                if inputKernelType == .Polynomial || inputKernelType == .Generalized{
+                    args.append(inputSharpness)
+                    
+                case .Polynomial:
                     args.append(contentsOf: [inputZeroCross, inputHardness, inputSharpness])
                 }
                 
