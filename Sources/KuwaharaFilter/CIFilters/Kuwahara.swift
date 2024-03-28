@@ -34,7 +34,7 @@ fileprivate extension KuwaharaTypes {
                     }
                 }
             """
-        case .generalized:
+        case .Polynomial:
             return """
                        
             float getSquaredZFor(float x){
@@ -124,13 +124,8 @@ fileprivate extension KuwaharaTypes {
             }
             
             """
-        case .test:
+        case .Generalized:
             return """
-            float2 mul(float2x2 matrix, float2 vec){
-                float a = matrix[0][0] * vec.x + matrix[0][1] * vec.y;
-                float b = matrix[1][0] * vec.x + matrix[1][1] * vec.y;
-                return float2(a,b);
-            }
             
             kernel float4 Kuwahara(sampler s, sampler weights, int kernelSize, float zeroCross, float hardness, float q) {
                 int k = 0;
@@ -146,7 +141,7 @@ fileprivate extension KuwaharaTypes {
                 float4 mean[SECTORS];
                 float3 std[SECTORS];
                 
-                for (k = 0; k < SECTORS; k++){
+                for (k = 0; k < SECTORS; k++) {
                     mean[k] = vec4(0);
                     std[k] = vec3(0);
                 }
@@ -157,12 +152,12 @@ fileprivate extension KuwaharaTypes {
                         float3 c = sample(s, samplerTransform(s, uv + float2(x,y))).rgb;
                         
                         for (k = 0; k < SECTORS; k++){
-                            float w = sample(weights, v + 0.5).r;
+                            float w = sample(weights, v ).r;
                     
                             mean[k] += float4(c * w, w);
                             std[k] += c * c * w;
                             
-                            v = mul(X,v);
+                            v = X * v;
                         }
                     }
                 }
@@ -254,7 +249,7 @@ public class Kuwahara: CIFilter {
     private var preGaussianPass: CIKernel{
         return CIKernel(source: Kuwahara.baseKernelCode + """
             float gaussian(float sigma, float2 pos) {
-                return ( 1.0f / (2.0f * PI * sigma * sigma) ) * exp( -( pow((pos.x - pos.y),2.) / (2.0f * sigma * sigma) ) );
+                return ( 1.0f / (2.0f * PI * sigma * sigma) ) * exp( -( (pos.x * pos.x + pos.y * pos.y ) / (2.0f * sigma * sigma) ) );
             }
         
             kernel float4 preGaussianPass(sampler s) {
@@ -302,7 +297,7 @@ public class Kuwahara: CIFilter {
                 
                 var args: [Any] = [input, inputKernelSize]
                 
-                if inputKernelType == .test{
+                if inputKernelType == .Generalized{
                     guard let url = Bundle.module.url(forResource: "blackSquare", withExtension: "jpg"),
                           let ciBase = CIImage(contentsOf: url) else {
                         return nil
@@ -312,7 +307,7 @@ public class Kuwahara: CIFilter {
                     args.insert(gaussPrePass, at: 1)
                 }
                 
-                if inputKernelType == .generalized || inputKernelType == .test{
+                if inputKernelType == .Polynomial || inputKernelType == .Generalized{
                     args.append(contentsOf: [inputZeroCross, inputHardness, inputSharpness])
                 }
                 
