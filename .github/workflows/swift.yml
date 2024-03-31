@@ -11,9 +11,7 @@ on:
 
 jobs:
   build:
-
     runs-on: macos-latest
-
     steps:
     - uses: actions/checkout@v3
      - name: Select Xcode
@@ -21,5 +19,5 @@ jobs:
     - name: Build and run iOS
       run: xcodebuild test -scheme KuwaharaFilter -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0.1' | xcpretty && exit ${PIPESTATUS[0]}
     - name: Build and run macOS
-      run: swift build
-      run: swift test
+        run: swift build
+        run: swift test
