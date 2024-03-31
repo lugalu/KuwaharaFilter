@@ -12,12 +12,14 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    name: test suite
     steps:
     - uses: actions/checkout@v3
-     - name: Select Xcode
+    - name: Select Xcode
       run: sudo xcode-select -switch /Applications/Xcode.app && /usr/bin/xcodebuild -version
     - name: Build and run iOS
       run: xcodebuild test -scheme KuwaharaFilter -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0.1' | xcpretty && exit ${PIPESTATUS[0]}
-    - name: Build and run macOS
-        run: swift build
-        run: swift test
+    - name: Build macOS
+      run: swift build
+    - name: run macOS
+      run: swift test
