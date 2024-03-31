@@ -3,8 +3,8 @@
 import CoreImage
 
 
-package var preSectorPass: CIKernel{
-    return CIKernel(source: Kuwahara.baseKernelCode + """
+package var PreSectorPass: CIKernel{
+    return CIKernel(source: BaseKernelCode + """
     kernel float4 preSectorPass(sampler s) {
         float2 uv = samplerTransform(s, destCoord());
         float2 pos = uv - 0.5f;
@@ -15,8 +15,8 @@ package var preSectorPass: CIKernel{
     """)!
 }
 
-package var preGaussianPass: CIKernel {
-    return CIKernel(source: Kuwahara.baseKernelCode + """
+package var PreGaussianPass: CIKernel {
+    return CIKernel(source: BaseKernelCode + """
     
         kernel float4 preGaussianPass(sampler s) {
         float sigmaR = 0.5 * 32.0 * 0.5;
@@ -42,8 +42,8 @@ package var preGaussianPass: CIKernel {
     """)!
 }
 
-package var preTensorPass: CIKernel {
-    return CIKernel(source: Kuwahara.baseKernelCode + """
+package var PreTensorPass: CIKernel {
+    return CIKernel(source: BaseKernelCode + """
         kernel float4 preTensorPass(sampler s) {
             float2 d = float2(1);
             float2 uv = destCoord();
@@ -69,8 +69,8 @@ package var preTensorPass: CIKernel {
     """)!
 }
 
-package var preHorizontalBlur: CIKernel{
-    return CIKernel(source: Kuwahara.baseKernelCode + """
+package var PreHorizontalBlur: CIKernel{
+    return CIKernel(source: BaseKernelCode + """
         kernel float4 preHorizontalBlur(sampler s, int blurRadius) {
             float4 col = float4(0);
             float kernelSum = 0.;
@@ -87,8 +87,8 @@ package var preHorizontalBlur: CIKernel{
     """)!
 }
 
-package var preAnisotropyCalc: CIKernel{
-    return CIKernel(source: Kuwahara.baseKernelCode + """
+package var PreAnisotropyPass: CIKernel{
+    return CIKernel(source: BaseKernelCode + """
         kernel float4 preAnisotropyCalc(sampler s, int blurRadius) {
             float4 col = float4(0);
             float kernelSum = 0.;

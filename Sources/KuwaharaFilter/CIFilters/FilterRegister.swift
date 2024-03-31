@@ -1,6 +1,6 @@
 //Created by Lugalu on 14/03/24.
 
-import UIKit
+import CoreImage
 
 public class FilterRegister: NSObject, CIFilterConstructor{
     public func filter(withName name: String) -> CIFilter? {

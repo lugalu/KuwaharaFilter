@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "KuwaharaFilter",
+    platforms: [.iOS(.v13), .macOS(.v12)],
     products: [
         .library(
             name: "KuwaharaFilter",
@@ -12,10 +13,13 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "KuwaharaFilter", resources: [.process("Resources/blackSquare.jpg")]),
+            name: "KuwaharaFilter", resources: [.process("Resources/blackSquare.jpg")],
+            cSettings: [.define("CI_SILENCE_GL_DEPRECATION")]
+        ),
         .testTarget(
             name: "KuwaharaFilterTests",
-            dependencies: ["KuwaharaFilter"]
+            dependencies: ["KuwaharaFilter"],
+            swiftSettings: [.define("CI_SILENCE_GL_DEPRECATION")]
         ),
     ]
 )
