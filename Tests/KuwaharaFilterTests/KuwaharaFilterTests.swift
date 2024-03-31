@@ -22,7 +22,7 @@ final class KuwaharaFilterTests: XCTestCase {
         XCTAssertNotNil(image.cgImage, "CGImage is nil")
         let CIImage = CIImage(cgImage: image.cgImage!)
         
-        let filter = CIFilter(name: "Kuwahara", parameters: ["inputImage": CIImage, "inputKernelType": KuwaharaTypes.generalized])
+        let filter = CIFilter(name: "Kuwahara", parameters: ["inputImage": CIImage, "inputKernelType": KuwaharaTypes.Generalized])
         XCTAssertNotNil(filter, "filter is nil")
         XCTAssertNotNil(filter?.outputImage, "output is nil")
     }

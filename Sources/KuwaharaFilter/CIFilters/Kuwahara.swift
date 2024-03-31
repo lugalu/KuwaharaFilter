@@ -36,13 +36,8 @@ fileprivate extension KuwaharaTypes {
             """
         case .Polynomial:
             return """
-                       
-            float getSquaredZFor(float x){
-                float z = max(0.0, x);
-                return z * z;
-            }
             
-            kernel float4 Kuwahara(sampler s, int kernelSize, float zeroCross, float hardness, float q){
+            kernel float4 Kuwahara(sampler s, int kernelSize, float zeroCross, float hardness, float sharpness){
                 float2 uv = destCoord();
                 int radius = kernelSize / 2;
             
@@ -113,7 +108,7 @@ fileprivate extension KuwaharaTypes {
                     std[k] = abs(std[k] / mean[k].w - mean[k].rgb * mean[k].rgb);
             
                     float sigma2 = std[k].r + std[k].g + std[k].b;
-                    float w = 1 / (1 + pow(hardness * 1000. * sigma2, 0.5 * q));
+                    float w = 1 / (1 + pow(hardness * 1000. * sigma2, 0.5 * sharpness));
                     
                     result += float4(mean[k].rgb * w, w);
                 }
@@ -178,6 +173,111 @@ fileprivate extension KuwaharaTypes {
                 return result;
             }
             """
+        case .Anisotropic:
+            return """
+                kernel float4 Kuwahara(sampler s, sampler anisotropic, float kernelRadius, float alpha, float zeroCross, float sharpness ){
+                    float4 t = sample(anisotropic, samplerCoord(s));
+                    int radius = int(kernelRadius) / 2;
+                    float zeta = 2. / (kernelRadius/2.);
+                    float sinZeroCross = sin(zeroCross);
+                    float eta = (zeta + cos(zeroCross)) / pow(sinZeroCross,2.);
+                    int k;
+                    float4 mean[SECTORS];
+                    float3 std[SECTORS];
+            
+                    for(k = 0; k < SECTORS; k++){
+                        mean[k] = float4(0);
+                        std[k] = float3(0);
+                    }
+                    
+                    float a = radius * clamp((alpha + t.a) / alpha, 0.1, 2.);
+                    float b = radius * clamp(alpha / (alpha + t.a), 0.1, 2.);
+            
+                    float cosPhi = cos(t.b);
+                    float sinPhi = sin(t.b);
+            
+                    float2x2 R = float2x2(
+                        float2(cosPhi, -sinPhi),
+                        float2(sinPhi, cosPhi)
+                    );
+
+                    float2x2 S = float2x2(
+                        float2(0.5f / a, 0.0f),
+                        float2(0.0f, 0.5f / b)
+                    );
+            
+                    float2x2 SR = S * R;
+            
+                    int maxX = int( sqrt(pow(a, 2.) * pow(cosPhi, 2.) + pow(b, 2.) * pow(sinPhi, 2.) ));
+                    int maxY = int( sqrt(pow(a, 2.) * pow(sinPhi, 2.) + pow(b, 2.) * pow(cosPhi, 2.) ));
+            
+                    for (int x = -maxX; x <= maxX; x++){
+                        for (int y = -maxY; y <= maxY; y++){
+            
+                            float2 v = SR * float2(x,y);
+                            if( dot(v,v) > 0.25) {
+                                continue;
+                            }
+                        
+                            float3 c = sample(s, samplerTransform(s, destCoord() + float2(x,y))).rgb;
+                            float sum = 0;
+                            float w[8];
+                            float vxx,vyy;
+            
+                            vxx = zeta - eta * pow(v.x,2.);
+                            vyy = zeta - eta * pow(v.y,2.);
+                            
+                            w[0] = getSquaredZFor(v.y + vxx);
+                        
+                            w[2] = getSquaredZFor(-v.x + vyy);
+                
+                            w[4] = getSquaredZFor(-v.y + vxx);
+                            
+                            w[6] = getSquaredZFor(v.x + vyy);
+                            
+                            v = sqrt(2.) / 2. * float2(v.x-v.y, v.x + v.y);
+                            vxx = zeta - eta * pow(v.x,2.);
+                            vyy = zeta - eta * pow(v.y,2.);
+                
+                            w[1] = getSquaredZFor(v.y + vxx);
+                
+                            w[3] = getSquaredZFor(-v.x + vyy);
+                
+                            w[5] = getSquaredZFor(-v.y + vxx);
+                                        
+                            w[7] = getSquaredZFor(v.x + vyy);
+                
+                            for(int k = 0; k < SECTORS; k++){
+                                sum += w[k];
+                            }
+                            
+                            float g = exp(-3.125f * dot(v,v)) / sum;
+                
+                            for(int k = 0; k < SECTORS; k++){
+                                float wk = w[k] * g;
+                                mean[k] += float4(c * wk,wk);
+                                std[k] += c*c*wk;
+                            }
+            
+                        }
+                    }
+            
+                    float4 result = float4(0);
+                    
+                    for(k = 0; k < SECTORS; k++){
+                        mean[k].rgb /= mean[k].a;
+                        std[k] = abs(std[k] / mean[k].a - (mean[k].rgb * mean[k].rgb));
+                
+                        float sigma2 = std[k].r + std[k].g + std[k].b;
+                        float w = 1. / (1. + pow(abs(1000. * sigma2), 0.5 * sharpness));
+                        
+                        result += float4(mean[k].rgb * w, w);
+                    }
+                
+                    result /= result.a;
+                    return result;
+                }
+            """
         }
     }
 }
@@ -193,7 +293,7 @@ public class Kuwahara: CIFilter {
     @objc var inputIsGrayscale: Bool = false
     
     //Generalized
-    /** Defines the overlap between 2 sectors of kuwahara, should be 0.01 <= n <= 2. affects Polynomial*/
+    /** Defines the overlap between 2 sectors of kuwahara, should be 0.01 <= n <= 2. affects Polynomial and Anisotropic*/
     @objc dynamic var inputZeroCross: Float = 0.58
 
     /** Image Hardness, should be between 1 <= n <= 100. affects Polynomial */
@@ -202,13 +302,33 @@ public class Kuwahara: CIFilter {
     /** Image Sharpness, should be 1 <= n <= 18. affects all except for basic.*/
     @objc dynamic var inputSharpness: Float = 18
     
-    static private let baseKernelCode: String = """
+    /** Blur prepass, should be 1 <= n <= 6. affects Anisotropic.*/
+    @objc dynamic var inputBlurRadius: Int = 2
+    
+    /** Blur prepass, should be 0.1 <= n <= 2. affects Anisotropic */
+    @objc dynamic var inputAlpha: Float = 1
+    
+    
+    static package let baseKernelCode: String = """
     #define SECTORS 8
     #define PI 3.14159265358979323846f
 
     float getLuminance(float3 color) {
         return max(color.r, max(color.g,color.b));
 
+    }
+
+    float gaussian(float sigma, float2 pos) {
+        return ( 1.0f / (2.0f * PI * sigma * sigma) ) * exp( -( (pos.x * pos.x + pos.y * pos.y ) / (2.0f * sigma * sigma) ) );
+    }
+
+    float gaussian(float sigma, float pos) {
+        return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
+    }
+
+    float getSquaredZFor(float x){
+        float z = max(0.0, x);
+        return z * z;
     }
 
     float4 sampleQuadrant(sampler s, float2 uv, int x1, int x2, int y1, int y2, int n) {
@@ -236,49 +356,7 @@ public class Kuwahara: CIFilter {
     private var kernel: CIKernel {
         return CIKernel(source: Kuwahara.baseKernelCode + inputKernelType.getKernel()) ?? CIKernel()
     }
-    
-    private var preSectorPass: CIKernel{
-        return CIKernel(source: Kuwahara.baseKernelCode + """
-        kernel float4 preSectorPass(sampler s) {
-            float2 uv = samplerTransform(s, destCoord());
-            float2 pos = uv - 0.5f;
-            float phi = atan(pos).y;
-            int Xk = int((-PI / SECTORS) < phi && phi <= (PI / SECTORS));
-            return float4(int(dot(pos, pos) <= 0.25f));
-        }
-        """)!
-    }
-    
-    private var preGaussianPass: CIKernel{
-        return CIKernel(source: Kuwahara.baseKernelCode + """
-            float gaussian(float sigma, float2 pos) {
-                return ( 1.0f / (2.0f * PI * sigma * sigma) ) * exp( -( (pos.x * pos.x + pos.y * pos.y ) / (2.0f * sigma * sigma) ) );
-            }
         
-            kernel float4 preGaussianPass(sampler s) {
-            float sigmaR = 0.5 * 32.0 * 0.5;
-            float sigmaS = 0.33 * sigmaR;
-            float2 uv = samplerCoord(s);
-            
-            float weight = 0.0f;
-            float kernelSum = 0.0f;
-        
-            for (int x = -int(floor(sigmaS)); x <= int(floor(sigmaS)); x++) {
-                for (int y = -int(floor(sigmaS)); y <= int(floor(sigmaS)); y++) {
-        
-                    float c = sample(s, uv + float2(x,y) * float2(1./32.,1./32.) ).r;
-                    float gauss = gaussian(sigmaS, float2(x, y));
-
-                    weight += c * gauss;
-                    kernelSum += gauss;
-                }
-            }
-            float result = (weight / kernelSum) * gaussian(sigmaR, (uv - 0.5) * sigmaR * 5.);
-            return float4(result);
-        }
-        """)!
-    }
-    
     public override var outputImage : CIImage? {
             get {
                 guard var input = inputImage else {
@@ -315,6 +393,16 @@ public class Kuwahara: CIFilter {
                     
                 case .Polynomial:
                     args.append(contentsOf: [inputZeroCross, inputHardness, inputSharpness])
+                    
+                case .Anisotropic:
+
+                    let tensor = preTensorPass.apply(extent: input.extent, roiCallback: callback, arguments: [input])
+                    let blur = preHorizontalBlur.apply(extent: input.extent, roiCallback: callback, arguments: [tensor, inputBlurRadius])
+                    let anisotropic = preAnisotropyCalc.apply(extent: input.extent, roiCallback: callback, arguments: [blur,inputBlurRadius])
+                    //return anisotropic
+                    //kernel float4 Kuwahara(sampler s, sampler anisotropic, float kernelRadius, float alpha, float zeroCross, float sharpness )
+                    args.insert(anisotropic, at: 1)
+                    args.append(contentsOf: [inputAlpha,inputZeroCross, inputSharpness])
                 }
                 
                 let out = kernel.apply(extent: input.extent,

@@ -7,7 +7,8 @@ import Foundation
     case Generalized
     /** generalized kuwahara using polynomial weights instead of gaussian, with the right parameters contains the same result as Generalized but faster..*/
     case Polynomial
- 
+    /** Like Polynomial but with better edge detection.*/
+    case Anisotropic
     
     public func getTitle() -> String{
         return switch self {
@@ -17,6 +18,8 @@ import Foundation
             "Generalized"
         case .Polynomial:
             "Polynomial"
+        case .Anisotropic:
+            "Anisotropic"
         }
     }
 }

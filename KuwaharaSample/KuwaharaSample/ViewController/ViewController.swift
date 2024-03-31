@@ -5,7 +5,7 @@ import KuwaharaFilter
 
 
 
-class ViewController: UIViewController, ImageReciever {
+class ViewController: UIViewController, ImageReceiver {
     
     var currentImage: UIImage? = UIImage(named: "testImage") {
         didSet{
@@ -115,7 +115,7 @@ class ViewController: UIViewController, ImageReciever {
    
     
     func getImage(image: CIImage, size: Int, type: KuwaharaTypes) throws -> UIImage {
-        guard var filter = CIFilter(name:"Kuwahara") else {
+        guard let filter = CIFilter(name:"Kuwahara") else {
             throw ImageErrors.failedToOutputImage(localizedDescription: "Filter Creation Failed")
         }
         
