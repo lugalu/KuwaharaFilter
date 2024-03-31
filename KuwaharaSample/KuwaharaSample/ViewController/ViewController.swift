@@ -5,7 +5,7 @@ import KuwaharaFilter
 
 
 
-class ViewController: UIViewController, ImageReciever {
+class ViewController: UIViewController, ImageReceiver {
     
     var currentImage: UIImage? = UIImage(named: "testImage") {
         didSet{
@@ -59,9 +59,7 @@ class ViewController: UIViewController, ImageReciever {
         
         return picker
     }()
-    
-    let ciToggle = CustomToggleComponent()
-    
+        
     let confirmButton: UIButton = {
         let button = UIButton(configuration: .borderedTinted())
 
@@ -103,7 +101,6 @@ class ViewController: UIViewController, ImageReciever {
         prepareActions()
         makeNavigation()
         
-        ciToggle.configure(withTitle: "Use CIFilter?")
         kuwaharaPicker.delegate = self
         kuwaharaPicker.dataSource = self
         
@@ -118,7 +115,7 @@ class ViewController: UIViewController, ImageReciever {
    
     
     func getImage(image: CIImage, size: Int, type: KuwaharaTypes) throws -> UIImage {
-        guard var filter = CIFilter(name:"Kuwahara") else {
+        guard let filter = CIFilter(name:"Kuwahara") else {
             throw ImageErrors.failedToOutputImage(localizedDescription: "Filter Creation Failed")
         }
         
@@ -135,10 +132,5 @@ class ViewController: UIViewController, ImageReciever {
         
         return UIImage(cgImage: cg)
     }
-    
-    func getImage(image: UIImage, size: Int, type: KuwaharaTypes) throws -> UIImage? {
-        return try image.applyKuwahara(type: type, size: size)
-    }
-
 }
 

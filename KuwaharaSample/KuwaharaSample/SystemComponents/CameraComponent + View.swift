@@ -15,9 +15,9 @@ extension CameraComponent{
             return view.layer as! AVCaptureVideoPreviewLayer
         }
         
-        var delegate: ImageReciever?
+        var delegate: ImageReceiver?
         
-        init(delegate: ImageReciever?){
+        init(delegate: ImageReceiver?){
             self.delegate = delegate
             super.init(nibName: nil, bundle: nil)
         }

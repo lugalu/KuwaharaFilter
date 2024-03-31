@@ -10,7 +10,6 @@ extension ViewController{
         view.addSubview(sliderLabel)
         view.addSubview(windowSizeSlider)
         view.addSubview(kuwaharaPicker)
-        view.addSubview(ciToggle)
         view.addSubview(confirmButton)
         view.addSubview(resetButton)
     }
@@ -19,7 +18,6 @@ extension ViewController{
         addImageViewConstraints()
         addSliderConstraints()
         addPickerConstraints()
-        addToggleConstraints()
         addResetButtonConstraints()
         addConfirmButtonConstraints()
     }
@@ -61,16 +59,6 @@ extension ViewController{
         
         NSLayoutConstraint.activate(constraints)
     }
-    
-    private func addToggleConstraints(){
-        let constraints = [
-            ciToggle.topAnchor.constraint(equalTo: kuwaharaPicker.bottomAnchor, constant: 16),
-            ciToggle.leadingAnchor.constraint(equalTo:  imgView.leadingAnchor),
-            ciToggle.trailingAnchor.constraint(equalTo: imgView.trailingAnchor)
-        ]
-        
-        NSLayoutConstraint.activate(constraints)
-    }
 
     
     private func addResetButtonConstraints(){
@@ -104,11 +92,11 @@ extension ViewController{
             let kernelSize = Int(self.windowSizeSlider.value)
             let selectionIdx = self.kuwaharaPicker.selectedRow(inComponent: 0)
             let kuwaharaType = KuwaharaTypes(rawValue: selectionIdx)!
-            let isCI = self.ciToggle.retrieveValue()
             
-            var out: UIImage?
-            do{
-                if isCI{
+            DispatchQueue.global().async {
+                var out: UIImage?
+                
+                do{
                     guard let img = baseImage.ciImage ?? CIImage(image: baseImage) else {
                         return
                     }
@@ -117,17 +105,11 @@ extension ViewController{
                     DispatchQueue.main.async {
                         self.imgView.image = out
                     }
-                }else{
-                    DispatchQueue.global().async{
-                        out = try? self.getImage(image: baseImage, size: kernelSize, type: kuwaharaType)
-                        
-                        DispatchQueue.main.async {
-                            self.imgView.image = out
-                        }
-                    }
+                
+                }catch{
+                    //MARK: You would handle the errors here
+                    fatalError(error.localizedDescription)
                 }
-            }catch{
-                fatalError(error.localizedDescription)
             }
         }
         

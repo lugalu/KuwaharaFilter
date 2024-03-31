@@ -4,7 +4,7 @@ import UIKit
 import AVFoundation
 
 
-protocol ImageReciever: UIViewController {
+protocol ImageReceiver: UIViewController {
     var newImage: UIImage? {get set}
 }
 
@@ -35,7 +35,7 @@ class CameraComponent{
     
     private init() {}
     
-    func start(delegate: ImageReciever?,
+    func start(delegate: ImageReceiver?,
                _ device: AVCaptureDevice.DeviceType = .builtInWideAngleCamera,
                _ mediaType: AVMediaType = .video,
                _ position: AVCaptureDevice.Position = .back,
