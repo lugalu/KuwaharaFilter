@@ -9,9 +9,9 @@ The current List of features is:
 
 **Zooming in is recommended!**
 
-<img src= "https://imgur.com/a/v0mEltv"/>
+<img src= "https://imgur.com/yifMsZ9"/>
     - Photo by <a href="https://www.pexels.com/@nejc-kosir-108379/">Nejc Košir</a> on <a href="https://www.pexels.com/photo/green-leafed-tree-338936/">Pexels</a>
-<img src= "https://imgur.com/a/EEyY5KO"/>
+<img src= "https://imgur.com/xtORE67"/>
     - Photo by <a href="https://www.pexels.com/@josh-hild-1270765/">Josh Hild</a> on <a href="https://www.pexels.com/photo/bird-s-eye-view-photography-of-lighted-city-3573383/">Pexels</a>
     
     
