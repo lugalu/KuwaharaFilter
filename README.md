@@ -5,8 +5,8 @@ Project focused on Implementing the KuwaharaFilter in Swift for Apple Platforms
 The current List of features is:
 - CI Filter for all the Kuwahara Types (Standard, Generalized, Polynomial, and Anisotropic).
 
-##Image Examples
 
+##Image Examples
 **Zooming in is recommended!**
 
 <img src= "https://i.imgur.com/yifMsZ9.jpg"/>
