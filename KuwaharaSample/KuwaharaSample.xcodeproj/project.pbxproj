@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		092C446B2BAA0CF6003D8DFC /* CustomToggleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */; };
 		094F16D22BA0DAFA00CAD88B /* ViewController + InititalSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */; };
+		0979131B2BBB80CC0058597D /* CustomSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979131A2BBB80CC0058597D /* CustomSlider.swift */; };
 		09E884682BA369EA006F216F /* ViewController + navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E884672BA369EA006F216F /* ViewController + navigation.swift */; };
 		09E8846B2BA36F78006F216F /* GalleryComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8846A2BA36F78006F216F /* GalleryComponent.swift */; };
 		09E8846D2BA36F80006F216F /* CameraComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8846C2BA36F80006F216F /* CameraComponent.swift */; };
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggleComponent.swift; sourceTree = "<group>"; };
 		094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController + InititalSetup.swift"; sourceTree = "<group>"; };
+		0979131A2BBB80CC0058597D /* CustomSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlider.swift; sourceTree = "<group>"; };
 		09E884672BA369EA006F216F /* ViewController + navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController + navigation.swift"; sourceTree = "<group>"; };
 		09E8846A2BA36F78006F216F /* GalleryComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryComponent.swift; sourceTree = "<group>"; };
 		09E8846C2BA36F80006F216F /* CameraComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraComponent.swift; sourceTree = "<group>"; };
@@ -67,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */,
+				0979131A2BBB80CC0058597D /* CustomSlider.swift */,
 			);
 			path = UIComponents;
 			sourceTree = "<group>";
@@ -197,6 +200,7 @@
 			files = (
 				092C446B2BAA0CF6003D8DFC /* CustomToggleComponent.swift in Sources */,
 				09E884712BA37AF6006F216F /* CameraComponent + View.swift in Sources */,
+				0979131B2BBB80CC0058597D /* CustomSlider.swift in Sources */,
 				09F6BF9B2B9E5D7700985B2C /* ViewController.swift in Sources */,
 				09F6BF972B9E5D7700985B2C /* AppDelegate.swift in Sources */,
 				09F6BF992B9E5D7700985B2C /* SceneDelegate.swift in Sources */,

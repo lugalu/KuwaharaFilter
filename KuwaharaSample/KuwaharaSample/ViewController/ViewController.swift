@@ -79,6 +79,12 @@ class ViewController: UIViewController, ImageReceiver {
         return button
     }()
     
+    let test: CustomSlider = {
+        var slider = CustomSlider()
+        slider.configure(parameters: [.minValue: 2, .maxValue: 40, .sliderStep: 1, .normalUpperBound: 15, .warningUpperBound: 30, .titleLabel: "Kernel Size"])
+        return slider
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -90,7 +96,7 @@ class ViewController: UIViewController, ImageReceiver {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        positionLabel(self.windowSizeSlider)
+        //positionLabel(self.windowSizeSlider)
     }
     
     //TODO: Add the picker!
@@ -98,8 +104,10 @@ class ViewController: UIViewController, ImageReceiver {
         imgView.image = currentImage
         addViews()
         addConstraints()
-        prepareActions()
+        //prepareActions()
         makeNavigation()
+        self.view.backgroundColor = UIColor(named: "Background")
+        
         
         kuwaharaPicker.delegate = self
         kuwaharaPicker.dataSource = self

@@ -7,19 +7,30 @@ extension ViewController{
 
     func addViews(){
         view.addSubview(imgView)
-        view.addSubview(sliderLabel)
-        view.addSubview(windowSizeSlider)
-        view.addSubview(kuwaharaPicker)
+        view.addSubview(test)
+//        view.addSubview(sliderLabel)
+//        view.addSubview(windowSizeSlider)
+//        view.addSubview(kuwaharaPicker)
         view.addSubview(confirmButton)
         view.addSubview(resetButton)
     }
     
     func addConstraints(){
         addImageViewConstraints()
-        addSliderConstraints()
-        addPickerConstraints()
+//        addSliderConstraints()
+//        addPickerConstraints()
         addResetButtonConstraints()
         addConfirmButtonConstraints()
+        
+        let constraints = [
+            test.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            test.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            test.topAnchor.constraint(equalTo: imgView.bottomAnchor, constant: 8),
+            test.heightAnchor.constraint(equalToConstant: 50)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+        
     }
     
     func prepareActions() {
