@@ -13,7 +13,8 @@ extension ViewController: PHPickerViewControllerDelegate{
             item.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
                 guard error == nil, let image =  image as? UIImage else {
                     return
-                } // since is a sample I don't care
+                }
+                
                 DispatchQueue.main.async {
                     self.currentImage = image
                     picker.dismiss(animated: true)

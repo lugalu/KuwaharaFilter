@@ -64,11 +64,6 @@ class CustomSlider: UIView {
     var warningColor: UIColor = .systemYellow
     var dangerColor: UIColor = .systemRed
     
-    
-    override var intrinsicContentSize: CGSize{
-        return CGSize(width: 374, height: 132)
-    }
-    
     init(){
         super.init(frame: .zero)
         basicSetup()

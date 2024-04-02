@@ -29,10 +29,6 @@ class CustomToggleComponent: UIView {
         return toggle
     }()
     
-    override var intrinsicContentSize: CGSize{
-        return CGSize(width: 374, height: 100)
-    }
-    
     func configure(withTitle title: String, isOn: Bool = true){
         label.text = title
         toggle.isOn = isOn

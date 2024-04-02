@@ -141,18 +141,21 @@ class KuwaharaView: UIView, KuwaharaViewRecieverDelegate {
             sharpnessSlider.isEnabled = false
             blurSlider.isEnabled = false
             angleSlider.isEnabled = false
+            
         case .Generalized:
             zeroCrossSlider.isEnabled = false
             hardnessSlider.isEnabled = false
             sharpnessSlider.isEnabled = true
             blurSlider.isEnabled = false
             angleSlider.isEnabled = false
+            
         case .Polynomial:
             zeroCrossSlider.isEnabled = true
             hardnessSlider.isEnabled = true
             sharpnessSlider.isEnabled = true
             blurSlider.isEnabled = false
             angleSlider.isEnabled = false
+            
         case .Anisotropic:
             zeroCrossSlider.isEnabled = true
             hardnessSlider.isEnabled = false
