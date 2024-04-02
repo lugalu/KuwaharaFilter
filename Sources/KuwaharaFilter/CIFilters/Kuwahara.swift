@@ -18,28 +18,21 @@ fileprivate extension KuwaharaTypes {
 }
 
 public class Kuwahara: CIFilter {
-    //Standard
     @objc dynamic var inputImage: CIImage?
-        /** Kernel Matrix around each pixel, should be 2<=n, note that higher values take more time to compute.*/
+    /** Kernel Matrix around each pixel, should be 2<=n, note that higher values take more time to compute.*/
     @objc dynamic var inputKernelSize: Int = 2
     /** The operation to be used, read the enum cases for a general explanation. */
     @objc dynamic var inputKernelType: KuwaharaTypes = .basic
     /** if image should become grayscale. */
     @objc dynamic var inputIsGrayscale: Bool = false
-    
-    //Generalized
     /** Defines the overlap between 2 sectors of kuwahara, should be 0.01 <= n <= 2. affects Polynomial and Anisotropic*/
     @objc dynamic var inputZeroCross: Float = 0.58
-
     /** Image Hardness, should be between 1 <= n <= 100. affects Polynomial */
     @objc dynamic var inputHardness: Float = 100
-    
     /** Image Sharpness, should be 1 <= n <= 18. affects all except for basic.*/
     @objc dynamic var inputSharpness: Float = 18
-    
     /** Blur prepass, should be 1 <= n <= 6. affects Anisotropic.*/
     @objc dynamic var inputBlurRadius: Int = 2
-    
     /** Kernel Angle  prepass, should be 0.1 <= n <= 2. affects Anisotropic */
     @objc dynamic var inputAngle: Float = 1
     
@@ -188,10 +181,10 @@ extension Kuwahara {
             inputImage = value as? CIImage
             
         case "inputKernelSize":
-            guard let kernelSize = value as? Int else {
+            guard let kernelSize = value as? NSNumber else {
                 return
             }
-            inputKernelSize = kernelSize
+            inputKernelSize = Int(kernelSize)
             
         case "inputKernelType":
             guard let type = value as? KuwaharaTypes else {
@@ -206,34 +199,34 @@ extension Kuwahara {
             inputIsGrayscale = type
             
         case "inputZeroCross":
-            guard let type = value as? Float else {
+            guard let type = value as? NSNumber else {
                 return
             }
-            inputZeroCross = type
+            inputZeroCross = Float(type)
             
         case "inputHardness":
-            guard let type = value as? Float else {
+            guard let type = value as? NSNumber else {
                 return
             }
-            inputHardness = type
+            inputHardness = Float(type)
             
         case "inputSharpness":
-            guard let type = value as? Float else {
+            guard let type = value as? NSNumber else {
                 return
             }
-            inputSharpness = type
+            inputSharpness = Float(type)
             
         case "inputBlurRadius":
-            guard let type = value as? Int else {
+            guard let type = value as? NSNumber else {
                 return
             }
-            inputBlurRadius = type
+            inputBlurRadius = Int(type)
             
         case "inputAngle":
-            guard let type = value as? Float else {
+            guard let type = value as? NSNumber else {
                 return
             }
-            inputAngle = type
+            inputAngle = Float(type)
             
             default:
                 break

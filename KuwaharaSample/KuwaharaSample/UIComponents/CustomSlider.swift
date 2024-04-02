@@ -8,6 +8,7 @@ class CustomSlider: UIView {
         case defaultValue
         case maxValue
         case titleLabel
+        case titleLabelColor
         case sliderStep
         case useColors
         case normalUpperBound
@@ -15,6 +16,17 @@ class CustomSlider: UIView {
         case normalColor
         case warningColor
         case dangerColor
+    }
+    
+    var isEnabled:Bool{
+        set{
+            slider.isEnabled = newValue
+            titleLabel.isEnabled = newValue
+            sliderLabel.isEnabled = newValue
+        }
+        get{
+            return slider.isEnabled
+        }
     }
     
     
@@ -52,6 +64,11 @@ class CustomSlider: UIView {
     var warningColor: UIColor = .systemYellow
     var dangerColor: UIColor = .systemRed
     
+    
+    override var intrinsicContentSize: CGSize{
+        return CGSize(width: 374, height: 132)
+    }
+    
     init(){
         super.init(frame: .zero)
         basicSetup()
@@ -75,8 +92,7 @@ class CustomSlider: UIView {
     }
 
     
-    private func positionLabel(_ sender: UISlider){
-       
+    private func positionLabel(_ sender: UISlider) {
         let trackRect = sender.trackRect(forBounds: slider.frame)
         let thumbRect = sender.thumbRect(forBounds: slider.bounds, trackRect: trackRect, value: slider.value)
         self.sliderLabel.center = CGPoint(x: thumbRect.midX, y: slider.frame.origin.y - 8)
@@ -113,7 +129,7 @@ class CustomSlider: UIView {
             let value = ceil(self.slider.value * self.sliderStep) / self.sliderStep
             self.slider.value = value
             self.sliderLabel.text = "\(value)"
-            
+            self.positionLabel(self.slider)
             if self.useColors {
                 self.sliderLabel.textColor = {
                     if value <= self.normalUpperBound {
@@ -153,6 +169,10 @@ class CustomSlider: UIView {
             case .titleLabel:
                 guard let value = value as? String else { return }
                 self.titleLabel.text = value
+                
+            case .titleLabelColor:
+                guard let value = value as? UIColor else { return }
+                self.titleLabel.textColor = value
                 
             case .sliderStep:
                 guard let value = value as? NSNumber else { return }
