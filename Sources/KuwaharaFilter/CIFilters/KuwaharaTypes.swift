@@ -13,7 +13,7 @@ import Foundation
     public func getTitle() -> String{
         return switch self {
         case .basic:
-            "Basic Kuwahara"
+            "Basic"
         case .Generalized:
             "Generalized"
         case .Polynomial:

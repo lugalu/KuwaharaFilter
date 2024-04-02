@@ -5,79 +5,14 @@ import KuwaharaFilter
 
 
 
-class ViewController: UIViewController, ImageReceiver {
-    
-    var currentImage: UIImage? = UIImage(named: "testImage") {
+class ViewController: UIViewController, KuwaharaViewDelegate {
+
+    lazy var currentImage: UIImage? = nil {
         didSet{
-            imgView.image = currentImage
-        }
-    }     
-    
-    var newImage: UIImage? {
-        set{
-            currentImage = newValue
-        }
-        get {
-            currentImage
+            viewReceiverDelegate?.update(image: currentImage)
         }
     }
-    
-    let imgView: UIImageView = {
-        let image = UIImageView()
-        image.contentMode = .scaleAspectFit
-        image.translatesAutoresizingMaskIntoConstraints = false
-        image.layer.borderColor = UIColor.green.cgColor
-        image.layer.borderWidth = 2
-        
-        return image
-    }()
-    
-    
-    let sliderLabel: UILabel = {
-        let label = UILabel()
-        label.text = "1"
-        label.textAlignment = .center
-        label.numberOfLines = 1
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        return label
-        
-    }()
-    
-    let windowSizeSlider: UISlider = {
-        let slider = UISlider()
-        slider.minimumValue = 1
-        slider.maximumValue = 50
-        slider.translatesAutoresizingMaskIntoConstraints = false
-        
-        return slider
-    }()
-    
-    let kuwaharaPicker: UIPickerView = {
-        let picker = UIPickerView()
-        picker.translatesAutoresizingMaskIntoConstraints = false
-        
-        return picker
-    }()
-        
-    let confirmButton: UIButton = {
-        let button = UIButton(configuration: .borderedTinted())
-
-        button.setTitle("Confirm", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        return button
-    }()
-    
-    let resetButton: UIButton = {
-        let button = UIButton(configuration: .borderedTinted())
-        button.role = .destructive
-        button.tintColor = .systemRed
-        button.setTitle("Reset Image", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        return button
-    }()
+    var viewReceiverDelegate: KuwaharaViewRecieverDelegate? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,49 +23,38 @@ class ViewController: UIViewController, ImageReceiver {
         setup()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        positionLabel(self.windowSizeSlider)
-    }
-    
-    //TODO: Add the picker!
     func setup(){
-        imgView.image = currentImage
-        addViews()
-        addConstraints()
-        prepareActions()
+        let v = KuwaharaView(delegate: self)
+        self.view = v
+        self.viewReceiverDelegate = v
         makeNavigation()
-        
-        kuwaharaPicker.delegate = self
-        kuwaharaPicker.dataSource = self
+        self.view.backgroundColor = UIColor(named: "Background")
         
         
     }
     
-    func positionLabel(_ sender: UISlider){
-        let trackRect = sender.trackRect(forBounds: sender.frame)
-        let thumbRect = sender.thumbRect(forBounds: sender.bounds, trackRect: trackRect, value: sender.value)
-        self.sliderLabel.center = CGPoint(x: thumbRect.midX, y: sender.frame.origin.y - 8)
-    }
-   
-    
-    func getImage(image: CIImage, size: Int, type: KuwaharaTypes) throws -> UIImage {
-        guard let filter = CIFilter(name:"Kuwahara") else {
-            throw ImageErrors.failedToOutputImage(localizedDescription: "Filter Creation Failed")
+    func onConfirmAction() {
+        guard let baseImg = self.currentImage,
+              let img = baseImg.ciImage ?? CIImage(image: baseImg),
+              var params = self.viewReceiverDelegate?.getParameters() else {
+            self.viewReceiverDelegate?.update(image: self.currentImage)
+            return
         }
         
-        filter.setValue(image, forKey: "inputImage")
-        filter.setValue(size, forKey: "inputKernelSize")
-        filter.setValue(type, forKey: "inputKernelType")
-        
-        guard let out = filter.outputImage else {
-            throw ImageErrors.failedToOutputImage(localizedDescription: "Filter output is missing")
+        DispatchQueue.global().async {
+
+            
+            params["inputImage"] = img
+            
+            guard let filter = CIFilter(name: "Kuwahara", parameters: params),
+                  let CIOut = filter.outputImage else {
+                self.viewReceiverDelegate?.update(image: self.currentImage)
+                return
+            }
+            let out = UIImage(ciImage: CIOut)
+            self.viewReceiverDelegate?.update(image: out)
+            
         }
-        guard let cg = CIContext().createCGImage(out, from: out.extent) else {
-            throw ImageErrors.failedToOutputImage(localizedDescription: "CIContext failed to create CGImage")
-        }
-        
-        return UIImage(cgImage: cg)
     }
 }
 

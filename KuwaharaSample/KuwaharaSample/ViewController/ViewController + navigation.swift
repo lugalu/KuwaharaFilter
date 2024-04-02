@@ -13,7 +13,8 @@ extension ViewController: PHPickerViewControllerDelegate{
             item.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
                 guard error == nil, let image =  image as? UIImage else {
                     return
-                } // since is a sample I don't care
+                }
+                
                 DispatchQueue.main.async {
                     self.currentImage = image
                     picker.dismiss(animated: true)
@@ -23,7 +24,6 @@ extension ViewController: PHPickerViewControllerDelegate{
         }
         
     }
-    
     
     func makeNavigation(){
         let galleryAction = UIAction(){ _ in
@@ -40,7 +40,7 @@ extension ViewController: PHPickerViewControllerDelegate{
         let saveAction = UIAction(){ _ in
             let gallery = GalleryComponent.shared
             
-            guard let img = self.imgView.image else { 
+            guard let img = self.viewReceiverDelegate?.get() else {
                 return
             }
             
@@ -50,11 +50,21 @@ extension ViewController: PHPickerViewControllerDelegate{
         
         let saveBtn = UIBarButtonItem(systemItem: .save, primaryAction: saveAction)
         
-        //let photosBtn = UIBarButtonItem(systemItem: .camera)
-        
         self.navigationItem.rightBarButtonItems = [galleryBtn, saveBtn]
         
-    }	
+        let resetAction = UIAction { _ in
+            self.viewReceiverDelegate?.update(image: self.currentImage)
+        }
+        
+        let resetBtn = UIBarButtonItem(systemItem: .undo, primaryAction: resetAction)
+        resetBtn.tintColor = .systemRed
+        
+        self.navigationItem.leftBarButtonItem = resetBtn
+        
+        self.navigationItem.title = "Kuwahara"
+        self.navigationItem.largeTitleDisplayMode = .never
+        
+    }
    
     
 }

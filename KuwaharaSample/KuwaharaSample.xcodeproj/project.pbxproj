@@ -8,12 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		092C446B2BAA0CF6003D8DFC /* CustomToggleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */; };
-		094F16D22BA0DAFA00CAD88B /* ViewController + InititalSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */; };
+		0979131B2BBB80CC0058597D /* CustomSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0979131A2BBB80CC0058597D /* CustomSlider.swift */; };
+		09ABF3B72BBC8D2C00BE4B87 /* KuwaharaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09ABF3B62BBC8D2C00BE4B87 /* KuwaharaView.swift */; };
+		09ABF3B92BBC8EE700BE4B87 /* KuwharaView + Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09ABF3B82BBC8EE700BE4B87 /* KuwharaView + Constraints.swift */; };
 		09E884682BA369EA006F216F /* ViewController + navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E884672BA369EA006F216F /* ViewController + navigation.swift */; };
 		09E8846B2BA36F78006F216F /* GalleryComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8846A2BA36F78006F216F /* GalleryComponent.swift */; };
-		09E8846D2BA36F80006F216F /* CameraComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8846C2BA36F80006F216F /* CameraComponent.swift */; };
-		09E884712BA37AF6006F216F /* CameraComponent + View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E884702BA37AF6006F216F /* CameraComponent + View.swift */; };
-		09F070152BA10E7F005C7D10 /* ViewController+UIPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F070142BA10E7F005C7D10 /* ViewController+UIPicker.swift */; };
 		09F6BF972B9E5D7700985B2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6BF962B9E5D7700985B2C /* AppDelegate.swift */; };
 		09F6BF992B9E5D7700985B2C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6BF982B9E5D7700985B2C /* SceneDelegate.swift */; };
 		09F6BF9B2B9E5D7700985B2C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F6BF9A2B9E5D7700985B2C /* ViewController.swift */; };
@@ -24,12 +23,11 @@
 
 /* Begin PBXFileReference section */
 		092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggleComponent.swift; sourceTree = "<group>"; };
-		094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController + InititalSetup.swift"; sourceTree = "<group>"; };
+		0979131A2BBB80CC0058597D /* CustomSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlider.swift; sourceTree = "<group>"; };
+		09ABF3B62BBC8D2C00BE4B87 /* KuwaharaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KuwaharaView.swift; sourceTree = "<group>"; };
+		09ABF3B82BBC8EE700BE4B87 /* KuwharaView + Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KuwharaView + Constraints.swift"; sourceTree = "<group>"; };
 		09E884672BA369EA006F216F /* ViewController + navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController + navigation.swift"; sourceTree = "<group>"; };
 		09E8846A2BA36F78006F216F /* GalleryComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryComponent.swift; sourceTree = "<group>"; };
-		09E8846C2BA36F80006F216F /* CameraComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraComponent.swift; sourceTree = "<group>"; };
-		09E884702BA37AF6006F216F /* CameraComponent + View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraComponent + View.swift"; sourceTree = "<group>"; };
-		09F070142BA10E7F005C7D10 /* ViewController+UIPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+UIPicker.swift"; sourceTree = "<group>"; };
 		09F6BF932B9E5D7700985B2C /* KuwaharaSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KuwaharaSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09F6BF962B9E5D7700985B2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		09F6BF982B9E5D7700985B2C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -67,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				092C446A2BAA0CF6003D8DFC /* CustomToggleComponent.swift */,
+				0979131A2BBB80CC0058597D /* CustomSlider.swift */,
 			);
 			path = UIComponents;
 			sourceTree = "<group>";
@@ -75,8 +74,6 @@
 			isa = PBXGroup;
 			children = (
 				09E8846A2BA36F78006F216F /* GalleryComponent.swift */,
-				09E8846C2BA36F80006F216F /* CameraComponent.swift */,
-				09E884702BA37AF6006F216F /* CameraComponent + View.swift */,
 			);
 			path = SystemComponents;
 			sourceTree = "<group>";
@@ -85,9 +82,9 @@
 			isa = PBXGroup;
 			children = (
 				09F6BF9A2B9E5D7700985B2C /* ViewController.swift */,
-				094F16D12BA0DAFA00CAD88B /* ViewController + InititalSetup.swift */,
-				09F070142BA10E7F005C7D10 /* ViewController+UIPicker.swift */,
 				09E884672BA369EA006F216F /* ViewController + navigation.swift */,
+				09ABF3B62BBC8D2C00BE4B87 /* KuwaharaView.swift */,
+				09ABF3B82BBC8EE700BE4B87 /* KuwharaView + Constraints.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -196,15 +193,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				092C446B2BAA0CF6003D8DFC /* CustomToggleComponent.swift in Sources */,
-				09E884712BA37AF6006F216F /* CameraComponent + View.swift in Sources */,
+				0979131B2BBB80CC0058597D /* CustomSlider.swift in Sources */,
 				09F6BF9B2B9E5D7700985B2C /* ViewController.swift in Sources */,
+				09ABF3B92BBC8EE700BE4B87 /* KuwharaView + Constraints.swift in Sources */,
 				09F6BF972B9E5D7700985B2C /* AppDelegate.swift in Sources */,
 				09F6BF992B9E5D7700985B2C /* SceneDelegate.swift in Sources */,
-				094F16D22BA0DAFA00CAD88B /* ViewController + InititalSetup.swift in Sources */,
-				09E8846D2BA36F80006F216F /* CameraComponent.swift in Sources */,
+				09ABF3B72BBC8D2C00BE4B87 /* KuwaharaView.swift in Sources */,
 				09E8846B2BA36F78006F216F /* GalleryComponent.swift in Sources */,
 				09E884682BA369EA006F216F /* ViewController + navigation.swift in Sources */,
-				09F070152BA10E7F005C7D10 /* ViewController+UIPicker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,8 +3,21 @@
 import UIKit
 
 class CustomToggleComponent: UIView {
+    
+    var isEnabled:Bool{
+        set{
+            toggle.isEnabled = newValue
+            label.isEnabled = newValue
+        }
+        get{
+            return toggle.isEnabled
+        }
+    }
+    
     let label: UILabel = {
         var label = UILabel()
+        label.textAlignment = .left
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -16,8 +29,9 @@ class CustomToggleComponent: UIView {
         return toggle
     }()
     
-    func configure(withTitle title: String){
+    func configure(withTitle title: String, isOn: Bool = true){
         label.text = title
+        toggle.isOn = isOn
         
         self.addSubview(label)
         self.addSubview(toggle)
@@ -25,20 +39,18 @@ class CustomToggleComponent: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         
         let constraints = [
-            label.topAnchor.constraint(equalTo: self.topAnchor),
-            label.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            label.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             label.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             label.rightAnchor.constraint(equalTo: self.centerXAnchor, constant: -16),
-            
-            toggle.topAnchor.constraint(equalTo: self.topAnchor),
-            toggle.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+      
+            toggle.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             toggle.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ]
         
         NSLayoutConstraint.activate(constraints)
     }
     
-    func retrieveValue() -> Bool{
+    func getValue() -> Bool{
         return toggle.isOn
     }
 

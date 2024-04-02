@@ -21,6 +21,7 @@ final class KuwaharaFilterTests: XCTestCase {
         XCTAssertNotNil(filter, "filter is nil")
         XCTAssertNotNil(filter?.outputImage, "output is nil")
         
+        
     }
     
     func testGeneralizedKuwahara() {
