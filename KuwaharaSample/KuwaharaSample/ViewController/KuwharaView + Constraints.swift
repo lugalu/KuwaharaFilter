@@ -23,6 +23,7 @@ extension KuwaharaView {
         addImageViewConstraints()
         addConfirmButtonConstraints()
         addScrollConstraints()
+        addSegmentConstraints()
         addToggleConstraints()
         addKernelConstraints()
         addZeroCrossConstraints()
@@ -59,8 +60,7 @@ extension KuwaharaView {
         let constraints = [
             typeSegment.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
             typeSegment.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
-            typeSegment.topAnchor.constraint(equalTo: parametersScroll.topAnchor),
-            typeSegment.heightAnchor.constraint(equalToConstant: 50)
+            typeSegment.topAnchor.constraint(equalTo: parametersScroll.topAnchor)
         ]
         
         NSLayoutConstraint.activate(constraints)
@@ -69,7 +69,7 @@ extension KuwaharaView {
     private func addToggleConstraints() {
         let constraints = [
             grayToggle.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
-            grayToggle.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
+            grayToggle.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor, constant: -8),
             grayToggle.topAnchor.constraint(equalTo: typeSegment.bottomAnchor, constant: 8),
             grayToggle.heightAnchor.constraint(equalToConstant: 50)
         ]
@@ -79,8 +79,8 @@ extension KuwaharaView {
     
     private func addKernelConstraints() {
         let constraints = [
-            kernelSlider.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
-            kernelSlider.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
+            kernelSlider.leadingAnchor.constraint(equalTo: grayToggle.leadingAnchor),
+            kernelSlider.trailingAnchor.constraint(equalTo: grayToggle.trailingAnchor),
             kernelSlider.topAnchor.constraint(equalTo: grayToggle.bottomAnchor, constant: 8),
             kernelSlider.heightAnchor.constraint(equalToConstant: 50)
         ]
@@ -90,8 +90,8 @@ extension KuwaharaView {
     
     private func addZeroCrossConstraints() {
         let constraints = [
-            zeroCrossSlider.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
-            zeroCrossSlider.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
+            zeroCrossSlider.leadingAnchor.constraint(equalTo: grayToggle.leadingAnchor),
+            zeroCrossSlider.trailingAnchor.constraint(equalTo: grayToggle.trailingAnchor),
             zeroCrossSlider.topAnchor.constraint(equalTo: kernelSlider.bottomAnchor, constant: 8),
             zeroCrossSlider.heightAnchor.constraint(equalToConstant: 50)
         ]
@@ -101,8 +101,8 @@ extension KuwaharaView {
     
     private func addHardnessConstraints() {
         let constraints = [
-            hardnessSlider.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
-            hardnessSlider.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
+            hardnessSlider.leadingAnchor.constraint(equalTo: grayToggle.leadingAnchor),
+            hardnessSlider.trailingAnchor.constraint(equalTo: grayToggle.trailingAnchor),
             hardnessSlider.topAnchor.constraint(equalTo: zeroCrossSlider.bottomAnchor, constant: 8),
             hardnessSlider.heightAnchor.constraint(equalToConstant: 50)
         ]
@@ -112,8 +112,8 @@ extension KuwaharaView {
     
     private func addSharpnessConstraints() {
         let constraints = [
-            sharpnessSlider.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
-            sharpnessSlider.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
+            sharpnessSlider.leadingAnchor.constraint(equalTo: grayToggle.leadingAnchor),
+            sharpnessSlider.trailingAnchor.constraint(equalTo: grayToggle.trailingAnchor),
             sharpnessSlider.topAnchor.constraint(equalTo: hardnessSlider.bottomAnchor, constant: 8),
             sharpnessSlider.heightAnchor.constraint(equalToConstant: 50)
         ]
@@ -123,8 +123,8 @@ extension KuwaharaView {
 
     private func addBlurConstraints() {
         let constraints = [
-            blurSlider.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
-            blurSlider.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
+            blurSlider.leadingAnchor.constraint(equalTo: grayToggle.leadingAnchor),
+            blurSlider.trailingAnchor.constraint(equalTo: grayToggle.trailingAnchor),
             blurSlider.topAnchor.constraint(equalTo: sharpnessSlider.bottomAnchor, constant: 8),
             blurSlider.heightAnchor.constraint(equalToConstant: 50)
         ]
@@ -134,10 +134,11 @@ extension KuwaharaView {
     
     private func addAngleConstraints() {
         let constraints = [
-            angleSlider.leadingAnchor.constraint(equalTo: parametersScroll.leadingAnchor),
-            angleSlider.trailingAnchor.constraint(equalTo: parametersScroll.trailingAnchor),
+            angleSlider.leadingAnchor.constraint(equalTo: grayToggle.leadingAnchor),
+            angleSlider.trailingAnchor.constraint(equalTo: grayToggle.trailingAnchor),
             angleSlider.topAnchor.constraint(equalTo: blurSlider.bottomAnchor, constant: 8),
-            angleSlider.heightAnchor.constraint(equalToConstant: 50)
+            angleSlider.heightAnchor.constraint(equalToConstant: 50),
+            angleSlider.bottomAnchor.constraint(equalTo: parametersScroll.bottomAnchor)
         ]
         
         NSLayoutConstraint.activate(constraints)

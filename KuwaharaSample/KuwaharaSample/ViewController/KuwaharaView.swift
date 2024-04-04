@@ -29,7 +29,6 @@ class KuwaharaView: UIView, KuwaharaViewRecieverDelegate {
     let parametersScroll: UIScrollView = {
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
-        scroll.layer.masksToBounds = false
         return scroll
     }()
 
@@ -182,7 +181,7 @@ class KuwaharaView: UIView, KuwaharaViewRecieverDelegate {
         var dict: [String: Any] = [:]
         dict["inputKernelSize"] = kernelSlider.getValue()
         dict["inputKerneltype"] = KuwaharaTypes(rawValue: typeSegment.selectedSegmentIndex)
-        dict["inputisGrayscale"] = grayToggle.getValue()
+        dict["inputIsGrayscale"] = grayToggle.getValue()
         dict["inputZeroCross"] = zeroCrossSlider.getValue()
         dict["inputHardness"] = hardnessSlider.getValue()
         dict["inputSharpness"] = sharpnessSlider.getValue()

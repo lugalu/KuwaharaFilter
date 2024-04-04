@@ -44,7 +44,18 @@ class GalleryComponent {
     }
     
     func saveImageToGallery(img:UIImage) {
-        ImageSaver().writeToPhotoAlbum(image: img)
+        let safe = makeSafeImage(img)
+        ImageSaver().writeToPhotoAlbum(image: safe)
+    }
+    
+    private func makeSafeImage(_ img: UIImage) -> UIImage {        
+        guard img.cgImage == nil,
+              let ci = img.ciImage,
+              let cg = CIContext().createCGImage(ci, from: ci.extent) else {
+            return img
+        }
+        
+        return UIImage(cgImage: cg)
     }
     
     class ImageSaver: NSObject {
