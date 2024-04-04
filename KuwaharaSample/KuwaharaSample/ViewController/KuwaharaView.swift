@@ -180,7 +180,7 @@ class KuwaharaView: UIView, KuwaharaViewRecieverDelegate {
     func getParameters() -> [String:Any]{
         var dict: [String: Any] = [:]
         dict["inputKernelSize"] = kernelSlider.getValue()
-        dict["inputKerneltype"] = KuwaharaTypes(rawValue: typeSegment.selectedSegmentIndex)
+        dict["inputKernelType"] = KuwaharaTypes(rawValue: typeSegment.selectedSegmentIndex)
         dict["inputIsGrayscale"] = grayToggle.getValue()
         dict["inputZeroCross"] = zeroCrossSlider.getValue()
         dict["inputHardness"] = hardnessSlider.getValue()
