@@ -71,7 +71,8 @@ public class Kuwahara: CIFilter {
                         return nil
                     }
                     let sectorPrePass = PreSectorPass.apply(extent: ciBase.extent, roiCallback: callback, arguments: [ciBase])
-                    let gaussPrePass = PreGaussianPass.apply(extent: ciBase.extent, roiCallback: callback, arguments: [sectorPrePass as Any])
+                    let gaussPrePass = PreGaussianPass.apply(extent: ciBase.extent, roiCallback: callback, arguments: [sectorPrePass!])
+                    
                     args.insert(gaussPrePass as Any, at: 1)
                     args.append(inputSharpness)
                     
@@ -184,7 +185,7 @@ extension Kuwahara {
             guard let kernelSize = value as? NSNumber else {
                 return
             }
-            inputKernelSize = Int(kernelSize)
+            inputKernelSize = Int(truncating: kernelSize)
             
         case "inputKernelType":
             guard let type = value as? KuwaharaTypes else {
@@ -202,31 +203,31 @@ extension Kuwahara {
             guard let type = value as? NSNumber else {
                 return
             }
-            inputZeroCross = Float(type)
+            inputZeroCross = Float(truncating: type)
             
         case "inputHardness":
             guard let type = value as? NSNumber else {
                 return
             }
-            inputHardness = Float(type)
+            inputHardness = Float(truncating: type)
             
         case "inputSharpness":
             guard let type = value as? NSNumber else {
                 return
             }
-            inputSharpness = Float(type)
+            inputSharpness = Float(truncating: type)
             
         case "inputBlurRadius":
             guard let type = value as? NSNumber else {
                 return
             }
-            inputBlurRadius = Int(type)
+            inputBlurRadius = Int(truncating: type)
             
         case "inputAngle":
             guard let type = value as? NSNumber else {
                 return
             }
-            inputAngle = Float(type)
+            inputAngle = Float(truncating: type)
             
             default:
                 break

@@ -36,7 +36,7 @@ package var PreGaussianPass: CIKernel {
                 kernelSum += gauss;
             }
         }
-        float result = (weight / kernelSum) * gaussian(sigmaR, (uv - 0.5) * sigmaR * 5.);
+        float result = (weight / kernelSum); // * gaussian(sigmaR, (uv - 0.5) * sigmaR * 5.);
         return float4(result);
     }
     """)!
